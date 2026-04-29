@@ -11,10 +11,8 @@
 8. [Design Decisions](#design-decisions)
 9. [Implementation Plan](#implementation-plan)
 10. [Metrics & Evaluation Strategy](#metrics--evaluation-strategy)
-11. [Database Schema](#database-schema)
-12. [API Specifications](#api-specifications)
-13. [Risk Management](#risk-management)
-14. [Timeline & Milestones](#timeline--milestones)
+11. [API Specifications](#api-specifications)
+12. [Timeline & Milestones](#timeline--milestones)
 
 ---
 
@@ -24,7 +22,7 @@ This project develops an integrated web application to analyze and compare the p
 
 **Key Deliverables:**
 - Web-based data analysis platform
-- Multiple regression models (Linear, Ridge, Lasso, SVR, Random Forest, Gradient Boosting, Neural Networks)
+- Multiple regression models (Linear, Ridge, Lasso, SVR, Random Forest, Gradient Boosting)
 - Real-time model comparison dashboard
 - Comprehensive metrics evaluation system
 - Data visualization and insights export
@@ -466,12 +464,13 @@ src/
 ### 2. **Model Selection Strategy**
 
 **Decision: Multiple regression models for comparison**
-- Linear/Ridge/Lasso: Interpretability, baseline
-- SVR: Non-linear kernel methods
-- Tree-based: Handle interactions naturally
-- Neural networks: Capture complex patterns
-- Ensemble: Robustness and generalization
-
+1. **Linear Regression:** Predicts continuous output by fitting a straight line, assuming linear relationships.
+![Linear regression](https://tinyurl.com/ysebtwv8)
+2. **Ridge Regression (L2):** Adds the squared sum of coefficients as a penalty term to reduce overfitting.
+3. **Lasso Regression (L1):** Adds the absolute sum of coefficients as a penalty, capable of reducing some coefficients to zero, effectively performing feature selection.
+4. **Support Vector Regression (SVR):** Uses kernel functions (linear or non-linear) to fit the best hyperplane, managing non-linearities.
+5. **Random Forest:** An ensemble method that builds multiple decision trees independently (bagging) and averages their results to reduce variance.
+6. **Gradient Boosting:** Builds decision trees sequentially, with each new tree correcting the errors (residuals) of previous trees to reduce bias and enhance accuracy
 **Alternative considered:** Single best model
 - Rejected because research requires understanding which approach works best for AQ prediction
 
@@ -523,7 +522,7 @@ prometheus_metrics = {
 
 ## Implementation Plan
 
-### Phase 1: Foundation (Weeks 1-3)
+### Phase 1: Foundation
 
 **Week 1: Project Setup & Infrastructure**
 - [ ] Repository setup (Git) with branching strategy
@@ -541,14 +540,13 @@ prometheus_metrics = {
 - **Deliverable:** Secure authentication system
 
 **Week 3: Database & Data Models**
-- [ ] PostgreSQL schema creation
 - [ ] ORM models (Sequelize/SQLAlchemy)
 - [ ] Migration management
 - [ ] Indexing strategy
 - [ ] Initial seed data
 - **Deliverable:** Database ready for data storage
 
-### Phase 2: Core Features (Weeks 4-8)
+### Phase 2: Core Features 
 
 **Week 4: Data Upload & Preview**
 - [ ] File upload endpoint (multipart form)
@@ -587,7 +585,7 @@ prometheus_metrics = {
 - [ ] Export functionality
 - **Deliverable:** Model comparison workflows
 
-### Phase 3: Advanced Features (Weeks 9-11)
+### Phase 3: 
 
 **Week 9: Feature Importance & Interpretability**
 - [ ] Feature importance extraction (all model types)
