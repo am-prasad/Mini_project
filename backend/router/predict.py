@@ -5,8 +5,6 @@ import logging
 from typing import Dict, List, Any
 
 logger = logging.getLogger(__name__)
-
-
 class QuestionnaireInput(BaseModel):
     """Input schema for 10-question AQ questionnaire"""
     Q1: int = Field(..., ge=1, le=5, description="Q1 Response (1-5)")
@@ -40,7 +38,6 @@ class PredictionResponse(BaseModel):
     recommendations: List[Dict[str, Any]]
 
 router = APIRouter(prefix="", tags=["Prediction"])
-
 
 def calculate_core_scores(responses: Dict) -> Dict:
     """Calculate CORE dimension scores"""
@@ -116,16 +113,14 @@ def generate_recommendations(core_scores: Dict) -> List[Dict]:
             })
     
     return recommendations
-
 @router.post("/predict", response_model=PredictionResponse)
 async def predict_aq(questionnaire: QuestionnaireInput):
     try:
-  
         from main import model_registry
         
-      
-        if not model_registry.models or 'Logistic Regression' not in model_registry.models:
-            raise HTTPException(status_code=500, detail="ML Models are not trained/loaded. Cannot make dynamic predictions.")
+       
+        if not model_registry.models:
+            raise HTTPException(status_code=500, detail="No ML Models are trained/loaded. Cannot make predictions.")
 
         responses = questionnaire.dict()
         X = np.array([[
@@ -140,36 +135,52 @@ async def predict_aq(questionnaire: QuestionnaireInput):
         model_confidences = {}
         confidences = []
         
-    
         class_mapping = {0: 'Low', 1: 'Medium', 2: 'High'}
 
-       # for model_name in ['Logistic Regression', 'Decision Tree', 'Random Forest', 'SVM', 'XGBoost']:
-        for model_name in ['Logistic Regression']:
-            pred, proba = model_registry.predict(X, model_name)
-            pred_str = class_mapping.get(int(pred), str(pred))
-            
-            model_predictions[model_name] = pred_str
-            confidence = float(np.max(proba))
-            model_confidences[model_name] = confidence
-            confidences.append(confidence)
+       
+        for model_name in model_registry.models.keys():
+            try:
+                pred, proba = model_registry.predict(X, model_name)
+                pred_str = class_mapping.get(int(pred), str(pred))
+                
+                model_predictions[model_name] = pred_str
+                confidence = float(np.max(proba))
+                model_confidences[model_name] = confidence
+                confidences.append(confidence)
+            except Exception as e:
+                logger.error(f"Prediction failed for model {model_name}: {e}")
+
+        if not model_predictions:
+            raise HTTPException(status_code=500, detail="All loaded models failed to make a prediction.")
+
         
-    
-        final_aq_category = model_predictions['Logistic Regression']
+        best_model_name = list(model_predictions.keys())[0] 
+        if model_registry.evaluation_metrics:
+            try:
+                
+                best_model_data = max(model_registry.evaluation_metrics, key=lambda x: x['accuracy'])
+                if best_model_data['model_name'] in model_predictions:
+                    best_model_name = best_model_data['model_name']
+            except Exception as e:
+                logger.warning(f"Failed to find best model from metrics: {e}")
+        
+        final_aq_category = model_predictions[best_model_name]
         avg_confidence = float(np.mean(confidences))
         
-      
+        
         feature_importance = []
         if model_registry.shap_explainer:
-            shap_vals = model_registry.shap_explainer.shap_values(X)
-            
-            vals = np.mean([np.abs(sv[0]) for sv in shap_vals], axis=0) if isinstance(shap_vals, list) else np.abs(shap_vals[0])
-            feature_names = ['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8', 'Q9', 'Q10']
-            
-            fi_dict = dict(zip(feature_names, vals))
-            sorted_fi = sorted(fi_dict.items(), key=lambda x: x[1], reverse=True)
-            feature_importance = [{'question': k, 'importance': float(v), 'rank': idx + 1} for idx, (k, v) in enumerate(sorted_fi[:3])]
+            try:
+                shap_vals = model_registry.shap_explainer.shap_values(X)
+                vals = np.mean([np.abs(sv[0]) for sv in shap_vals], axis=0) if isinstance(shap_vals, list) else np.abs(shap_vals[0])
+                feature_names = ['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8', 'Q9', 'Q10']
+                
+                fi_dict = dict(zip(feature_names, vals))
+                sorted_fi = sorted(fi_dict.items(), key=lambda x: x[1], reverse=True)
+                feature_importance = [{'question': k, 'importance': float(v), 'rank': idx + 1} for idx, (k, v) in enumerate(sorted_fi[:3])]
+            except Exception as e:
+                logger.warning(f"Failed to calculate local SHAP values: {e}")
 
-       
         weak_dimensions = identify_weak_dimensions(core_scores)
         behavioral_pattern = get_behavioral_pattern(final_aq_category, core_scores)
         recommendations = generate_recommendations(core_scores)

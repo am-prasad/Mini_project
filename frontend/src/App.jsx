@@ -239,7 +239,6 @@ function App() {
         <div className="footer-content">
           <p>AQ Prediction System — Research-based Adversity Quotient Analysis</p>
           <p className="footer-note">
-            No data is stored or collected. All processing is temporary and ephemeral.
           </p>
         </div>
       </footer>
