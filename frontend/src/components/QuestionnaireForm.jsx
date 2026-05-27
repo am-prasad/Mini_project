@@ -17,7 +17,7 @@ const QUESTIONS = [
 const SCALE_LABELS = {
   1: 'Strongly Disagree',
   2: 'Disagree',
-  3: 'Neutral',
+  3: 'Neither Agree nor Disagree',
   4: 'Agree',
   5: 'Strongly Agree',
 };

@@ -1,3 +1,4 @@
+import React from 'react';
 import LoadingSpinner from './LoadingSpinner';
 import '../styles/ModelComparison.css';
 
@@ -8,11 +9,18 @@ function ModelComparison({ data, isLoading }) {
     return <LoadingSpinner message="Loading model comparison data..." />;
   }
 
-  if (!data || !data.models || data.models.length === 0) {
+  // 1. Target the correct backend key: 'algorithms'
+  let rawAlgorithms = [];
+  if (data && Array.isArray(data.algorithms)) {
+    rawAlgorithms = data.algorithms;
+  }
+
+  // 2. Fallback empty state if no array is found
+  if (!rawAlgorithms || rawAlgorithms.length === 0) {
     return (
       <div className="model-comparison">
         <div className="section-header">
-          <h2>🤖 Model Comparison</h2>
+          <h2>Model Comparison</h2>
           <p>Compare performance metrics across different ML models</p>
         </div>
         <div className="no-data-message">
@@ -24,7 +32,19 @@ function ModelComparison({ data, isLoading }) {
     );
   }
 
-  const { models, best_model, best_accuracy } = data;
+  // 3. Map backend keys ('model_name') safely to your layout variables
+  const models = rawAlgorithms.map((m) => ({
+    name: m.model_name || 'Unknown Model',
+    accuracy: m.accuracy || 0,
+    f1_score: m.f1_score || 0,
+    auc_roc: m.auc_roc || 0,
+    cv_mean: m.cv_mean || 0,
+    cv_std: m.cv_std || 0,
+  }));
+
+  // 4. Extract global summary values directly from the top level response
+  const best_model = data.best_model || 'Logistic Regression';
+  const best_accuracy = data.best_accuracy || 0;
 
   return (
     <div className="model-comparison">
@@ -40,7 +60,7 @@ function ModelComparison({ data, isLoading }) {
           <div className="best-model-info">
             <h3>Best Performing Model</h3>
             <div className="best-model-name">{best_model}</div>
-            {best_accuracy && (
+            {best_accuracy > 0 && (
               <p className="best-model-accuracy">
                 Accuracy: <strong>{(best_accuracy * 100).toFixed(2)}%</strong>
               </p>
@@ -73,11 +93,11 @@ function ModelComparison({ data, isLoading }) {
                       {isBest && <span className="best-badge">Best</span>}
                     </span>
                   </td>
-                  <td>{(model.accuracy || 0).toFixed(2)}</td>
-                  <td>{(model.f1_score || 0).toFixed(2)}</td>
-                  <td>{(model.auc_roc || 0).toFixed(2)}</td>
-                  <td>{(model.cv_mean || 0).toFixed(2)}</td>
-                  <td>{(model.cv_std || 0).toFixed(2)}</td>
+                  <td>{(model.accuracy * 100).toFixed(2)}%</td>
+                  <td>{(model.f1_score * 100).toFixed(2)}%</td>
+                  <td>{model.auc_roc.toFixed(2)}</td>
+                  <td>{(model.cv_mean * 100).toFixed(2)}%</td>
+                  <td>{model.cv_std.toFixed(4)}</td>
                 </tr>
               );
             })}
@@ -98,19 +118,19 @@ function ModelComparison({ data, isLoading }) {
               <div className="model-card-mobile-metrics">
                 <div className="metric-item">
                   <span className="metric-label">Accuracy</span>
-                  <span className="metric-value">{(model.accuracy || 0).toFixed(2)}</span>
+                  <span className="metric-value">{(model.accuracy * 100).toFixed(2)}%</span>
                 </div>
                 <div className="metric-item">
                   <span className="metric-label">F1 Score</span>
-                  <span className="metric-value">{(model.f1_score || 0).toFixed(2)}</span>
+                  <span className="metric-value">{(model.f1_score * 100).toFixed(2)}%</span>
                 </div>
                 <div className="metric-item">
                   <span className="metric-label">AUC-ROC</span>
-                  <span className="metric-value">{(model.auc_roc || 0).toFixed(2)}</span>
+                  <span className="metric-value">{model.auc_roc.toFixed(2)}</span>
                 </div>
                 <div className="metric-item">
                   <span className="metric-label">CV Mean</span>
-                  <span className="metric-value">{(model.cv_mean || 0).toFixed(2)}</span>
+                  <span className="metric-value">{(model.cv_mean * 100).toFixed(2)}%</span>
                 </div>
               </div>
             </div>
@@ -123,7 +143,7 @@ function ModelComparison({ data, isLoading }) {
         <h3>📊 Accuracy Comparison</h3>
         <div className="chart-bars">
           {models.map((model, idx) => {
-            const accuracy = model.accuracy || 0;
+            const accuracy = model.accuracy;
             const percent = (accuracy * 100).toFixed(1);
             return (
               <div key={idx} className="chart-bar-row">

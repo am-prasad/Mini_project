@@ -35,10 +35,10 @@ class ModelRegistry:
             # 1. Load ML Models
             model_files = {
                 'Logistic Regression': 'logistic_regression_model.pkl',
-                'Decision Tree': 'decision_tree_model.pkl',
-                'Random Forest': 'random_forest_model.pkl',
-                'SVM': 'svm_model.pkl',
-                'XGBoost': 'xgb_model.pkl'
+                # 'Decision Tree': 'decision_tree_model.pkl',
+                # 'Random Forest': 'random_forest_model.pkl',
+                # 'SVM': 'svm_model.pkl',
+                # 'XGBoost': 'xgb_model.pkl'
             }
             for model_name, filename in model_files.items():
                 path = os.path.join(self.models_dir, filename)

@@ -11,7 +11,7 @@ function Header({ activeTab, onTabChange, darkMode, onToggleDarkMode }) {
       <div className="header-inner">
         <div className="header-top">
           <div className="header-brand">
-            <h1>AQ Prediction System</h1>
+            <h1>Exploring the Impact of Adversity Quotient of Adoloscent behavioral pattern.</h1>
             <p>Adversity Quotient Analysis Dashboard</p>
           </div>
           <button

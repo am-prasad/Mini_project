@@ -124,7 +124,7 @@ async def predict_aq(questionnaire: QuestionnaireInput):
         from main import model_registry
         
       
-        if not model_registry.models or 'XGBoost' not in model_registry.models:
+        if not model_registry.models or 'Logistic Regression' not in model_registry.models:
             raise HTTPException(status_code=500, detail="ML Models are not trained/loaded. Cannot make dynamic predictions.")
 
         responses = questionnaire.dict()
@@ -143,7 +143,8 @@ async def predict_aq(questionnaire: QuestionnaireInput):
     
         class_mapping = {0: 'Low', 1: 'Medium', 2: 'High'}
 
-        for model_name in ['Logistic Regression', 'Decision Tree', 'Random Forest', 'SVM', 'XGBoost']:
+       # for model_name in ['Logistic Regression', 'Decision Tree', 'Random Forest', 'SVM', 'XGBoost']:
+        for model_name in ['Logistic Regression']:
             pred, proba = model_registry.predict(X, model_name)
             pred_str = class_mapping.get(int(pred), str(pred))
             
@@ -153,7 +154,7 @@ async def predict_aq(questionnaire: QuestionnaireInput):
             confidences.append(confidence)
         
     
-        final_aq_category = model_predictions['XGBoost']
+        final_aq_category = model_predictions['Logistic Regression']
         avg_confidence = float(np.mean(confidences))
         
       
