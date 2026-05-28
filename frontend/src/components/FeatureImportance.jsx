@@ -37,7 +37,7 @@ function FeatureImportance({ data, isLoading }) {
     return (
       <div className="feature-importance">
         <div className="section-header">
-          <h2>🔬 Feature Importance (SHAP Analysis)</h2>
+          <h2> Feature Importance (SHAP Analysis)</h2>
           <p>Understanding which factors most influence AQ prediction</p>
         </div>
         <div className="no-data-message">
@@ -68,7 +68,7 @@ function FeatureImportance({ data, isLoading }) {
       </div>
 
       <div className="importance-chart card">
-        <h3>📊 Global Feature Rankings</h3>
+        <h3> Global Feature Rankings</h3>
 
         <div className="feature-rows">
           {sortedFeatures.map((feature, idx) => {
@@ -107,7 +107,7 @@ function FeatureImportance({ data, isLoading }) {
 
                 {isTop3 && INSIGHTS[featureId] && (
                   <div className="insight-card">
-                    <strong>💡 Insight:</strong> {INSIGHTS[featureId]}
+                    <strong> Insight:</strong> {INSIGHTS[featureId]}
                   </div>
                 )}
               </div>
