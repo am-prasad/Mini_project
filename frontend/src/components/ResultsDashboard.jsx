@@ -3,7 +3,8 @@ import RecommendationCard from './RecommendationCard';
 import CoreDimensions from './CoreDimensions';
 import '../styles/ResultsDashboard.css';
 
-function ResultsDashboard({ results, onReset }) {
+function ResultsDashboard({ results = {}, onReset }) {
+  // Destructure with safe fallback defaults
   const {
     aq_score = 0,
     aq_category = 'Medium',
@@ -12,42 +13,67 @@ function ResultsDashboard({ results, onReset }) {
     weak_dimensions = [],
     behavioral_pattern = '',
     recommendations = [],
-    model_predictions = {},
-    model_confidences = {},
-    feature_importance = [],
   } = results;
 
-  // Category styling
+  // 1. Sanitize top-level numbers safely to prevent NaN
+  const numericScore = useMemo(() => {
+    const parsed = Number(aq_score);
+    return isNaN(parsed) ? 0 : parsed;
+  }, [aq_score]);
+  
+  // Auto-detects if confidence is a decimal (0.70) or percentage (70)
+  const numericConfidence = useMemo(() => {
+    const raw = Number(confidence);
+    if (isNaN(raw)) return 0;
+    return raw <= 1 ? raw * 100 : raw;
+  }, [confidence]);
+
+  // Category styling normalized for CSS classes
   const categoryClass = useMemo(() => {
-    const cat = aq_category.toLowerCase();
+    const cat = String(aq_category || 'Medium').toLowerCase();
     if (cat.includes('high')) return 'high';
     if (cat.includes('low')) return 'low';
     return 'medium';
   }, [aq_category]);
 
-  // Gauge color
+  // Gauge color based on classification
   const gaugeColor = useMemo(() => {
     switch (categoryClass) {
-      case 'high': return '#10b981';
-      case 'low': return '#ef4444';
-      default: return '#f59e0b';
+      case 'high': return '#10b981'; // Green
+      case 'low': return '#ef4444';  // Red
+      default: return '#f59e0b';     // Orange/Yellow
     }
   }, [categoryClass]);
 
-  // AQ Score gauge: score is typically 10-50 range
-  const maxScore = 50;
-  const scorePercent = Math.min(Math.round((aq_score / maxScore) * 100), 100);
+  // Dynamic Scale Detection: Determines if score uses a 5-point scale or 50-point scale
+  // Based on your payload (e.g., 2.79), this auto-allocates a max scale of 5.
+  const maxScore = useMemo(() => {
+    return numericScore <= 5 ? 5 : 50;
+  }, [numericScore]);
 
-  const gaugeStyle = {
-    background: `conic-gradient(
-      ${gaugeColor} ${scorePercent * 3.6}deg,
-      rgba(0,0,0,0.06) ${scorePercent * 3.6}deg
-    )`,
-    mask: 'radial-gradient(farthest-side, transparent calc(100% - 12px), #fff calc(100% - 11px))',
-    WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 12px), #fff calc(100% - 11px))',
-  };
+  // Percentage calculation clamped between 0 and 100
+  const scorePercent = useMemo(() => {
+    if (maxScore === 0) return 0;
+    const percent = Math.round((numericScore / maxScore) * 100);
+    return Math.max(0, Math.min(percent, 100));
+  }, [numericScore, maxScore]);
 
-  // Download JSON
+  // Thread-safe CSS Conic Gradient string builder
+  const gaugeStyle = useMemo(() => {
+    const degrees = scorePercent * 3.6;
+    return {
+      background: `conic-gradient(
+        ${gaugeColor} 0deg,
+        ${gaugeColor} ${degrees}deg,
+        rgba(0, 0, 0, 0.06) ${degrees}deg,
+        rgba(0, 0, 0, 0.06) 360deg
+      )`,
+      mask: 'radial-gradient(farthest-side, transparent calc(100% - 12px), #fff calc(100% - 11px))',
+      WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 12px), #fff calc(100% - 11px))',
+    };
+  }, [gaugeColor, scorePercent]);
+
+  // Download JSON payload utility
   const handleDownloadJSON = () => {
     const blob = new Blob([JSON.stringify(results, null, 2)], {
       type: 'application/json',
@@ -62,7 +88,7 @@ function ResultsDashboard({ results, onReset }) {
     URL.revokeObjectURL(url);
   };
 
-  // Print
+  // System Print utility
   const handlePrint = () => {
     window.print();
   };
@@ -72,10 +98,18 @@ function ResultsDashboard({ results, onReset }) {
       {/* AQ Overview */}
       <div className="aq-overview card-elevated">
         <div className="aq-gauge">
-          <div className="aq-gauge-ring" style={gaugeStyle}></div>
+          <div 
+            className="aq-gauge-ring" 
+            style={{ 
+              width: '100%', 
+              height: '100%', 
+              borderRadius: '50%',
+              ...gaugeStyle 
+            }}
+          ></div>
           <div className="aq-gauge-inner">
             <div className="aq-score-value" style={{ color: gaugeColor }}>
-              {Number(aq_score).toFixed(2)}
+              {numericScore.toFixed(2)}
             </div>
             <div className="aq-score-label">AQ Score</div>
           </div>
@@ -94,60 +128,72 @@ function ResultsDashboard({ results, onReset }) {
 
           <div className="confidence-section">
             <span className="confidence-label">
-              Model Confidence: <span className="confidence-value">{(confidence * 100).toFixed(1)}%</span>
+              Model Confidence: <span className="confidence-value">{numericConfidence.toFixed(1)}%</span>
             </span>
             <div className="confidence-bar-track">
               <div
                 className="confidence-bar-fill"
-                style={{ width: `${Math.min(confidence * 100, 100)}%` }}
+                style={{ width: `${Math.min(numericConfidence, 100)}%` }}
               ></div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* CORE Dimensions */}
+      {/* CORE Dimensions Grid */}
       {core_scores && Object.keys(core_scores).length > 0 && (
         <CoreDimensions scores={core_scores} />
       )}
 
-      {/* Weak Dimensions */}
-      {weak_dimensions && weak_dimensions.length > 0 && (
+      {/* Weak Dimensions Summary Section */}
+      {Array.isArray(weak_dimensions) && weak_dimensions.length > 0 && (
         <div className="weak-section">
           <div className="section-header">
             <h2>⚠️ Areas for Improvement</h2>
             <p>These dimensions need your attention for growth</p>
           </div>
           <div className="weak-cards">
-            {weak_dimensions.map((dim, idx) => (
-              <div key={idx} className="weak-card" style={{ animationDelay: `${idx * 0.1}s` }}>
-                <div className="weak-card-header">
-                  <span className="weak-dimension-name">{dim.dimension}</span>
-                  <span className={`severity-badge ${(dim.severity || 'medium').toLowerCase()}`}>
-                    {dim.severity || 'Moderate'}
-                  </span>
+            {weak_dimensions.map((dim, idx) => {
+              // FIXED: Corrected key referencing target from 'current_score' to backend payload 'score'
+              const current = Number(dim?.score);
+              const sanitizedCurrent = isNaN(current) ? 0 : current;
+              
+              const target = Number(dim?.target_score);
+              const sanitizedTarget = isNaN(target) ? 0 : target;
+              
+              // FIXED: Calculated delta securely to guarantee precision consistency 
+              const gap = sanitizedTarget - sanitizedCurrent > 0 ? sanitizedTarget - sanitizedCurrent : 0;
+
+              return (
+                <div key={idx} className="weak-card" style={{ animationDelay: `${idx * 0.1}s` }}>
+                  <div className="weak-card-header">
+                    <span className="weak-dimension-name">{dim?.dimension || 'Unknown'}</span>
+                    <span className={`severity-badge ${(dim?.severity || 'medium').toLowerCase()}`}>
+                      {dim?.severity || 'Moderate'}
+                    </span>
+                  </div>
+                  <div className="weak-scores">
+                    <div className="weak-score-item">
+                      <span className="weak-score-label">Current</span>
+                      <span className="weak-score-value current">{sanitizedCurrent.toFixed(2)}</span>
+                    </div>
+                    <div className="weak-score-item">
+                      <span className="weak-score-label">Target</span>
+                      <span className="weak-score-value target">{sanitizedTarget.toFixed(2)}</span>
+                    </div>
+                    <div className="weak-score-item">
+                      <span className="weak-score-label">Gap</span>
+                      <span className="weak-score-value improvement">+{gap.toFixed(2)}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="weak-scores">
-                  <div className="weak-score-item">
-                    <span className="weak-score-label">Current</span>
-                    <span className="weak-score-value current">{Number(dim.current_score).toFixed(2)}</span>
-                  </div>
-                  <div className="weak-score-item">
-                    <span className="weak-score-label">Target</span>
-                    <span className="weak-score-value target">{Number(dim.target_score).toFixed(2)}</span>
-                  </div>
-                  <div className="weak-score-item">
-                    <span className="weak-score-label">Gap</span>
-                    <span className="weak-score-value improvement">+{Number(dim.improvement_needed).toFixed(2)}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
 
-      {/* Behavioral Pattern */}
+      {/* Behavioral Pattern Card */}
       {behavioral_pattern && (
         <div className="pattern-section">
           <div className="section-header">
@@ -160,8 +206,8 @@ function ResultsDashboard({ results, onReset }) {
         </div>
       )}
 
-      {/* Recommendations */}
-      {recommendations && recommendations.length > 0 && (
+      {/* Actionable Recommendations Grid */}
+      {Array.isArray(recommendations) && recommendations.length > 0 && (
         <div className="recommendations-section">
           <div className="section-header">
             <h2>💡 Personalized Recommendations</h2>
@@ -170,7 +216,7 @@ function ResultsDashboard({ results, onReset }) {
           <div className="recommendations-grid">
             {recommendations.map((rec, idx) => (
               <RecommendationCard
-                key={idx}
+                key={rec?.id || idx}
                 recommendation={rec}
               />
             ))}
@@ -178,7 +224,7 @@ function ResultsDashboard({ results, onReset }) {
         </div>
       )}
 
-      {/* Export Options */}
+      {/* Actionable Export Triggers */}
       <div className="export-section">
         <button className="btn btn-secondary" onClick={handlePrint}>
           🖨️ Print Results
@@ -188,7 +234,7 @@ function ResultsDashboard({ results, onReset }) {
         </button>
       </div>
 
-      {/* Reset */}
+      {/* Navigation State Reset Element */}
       <div className="reset-section">
         <button className="btn btn-primary btn-lg" onClick={onReset}>
           🔄 Take Another Assessment
