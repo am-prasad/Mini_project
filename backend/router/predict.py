@@ -169,9 +169,10 @@ async def predict_aq(questionnaire: QuestionnaireInput):
         
         
         feature_importance = []
-        if model_registry.shap_explainer:
+        shap_explainer = model_registry.shap_explainers.get(best_model_name)
+        if shap_explainer:
             try:
-                shap_vals = model_registry.shap_explainer.shap_values(X)
+                shap_vals = shap_explainer.shap_values(X)
                 vals = np.mean([np.abs(sv[0]) for sv in shap_vals], axis=0) if isinstance(shap_vals, list) else np.abs(shap_vals[0])
                 feature_names = ['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8', 'Q9', 'Q10']
                 
