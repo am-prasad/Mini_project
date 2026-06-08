@@ -1,0 +1,10 @@
+[
+    {
+        "model_name": "Support Vector Machine",
+        "accuracy": 0.9091,
+        "f1_score": 0.8811,
+        "auc_roc": 0.9803,
+        "cv_mean": 0.9152,
+        "cv_std": 0.0354
+    }
+]

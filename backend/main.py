@@ -107,7 +107,7 @@ class ModelRegistry:
                     self.X_trains[model_name] = joblib.load(xtrain_path)
                     logger.info(f"  + X_train loaded for '{model_name}'")
 
-                # ── 4. Accumulate evaluation metrics ─────────────────────────────
+                
                 self.evaluation_metrics.extend(metrics)
 
                 # ── 5. Feature importance – use first model found as global default
@@ -126,7 +126,7 @@ class ModelRegistry:
             logger.error(f"Error loading models: {e}", exc_info=True)
             return False
 
-    # ------------------------------------------------------------------
+    
     def predict(self, X, model_name):
         """Return (prediction_label, probabilities) for the given model."""
         model = self.models[model_name]
@@ -135,7 +135,7 @@ class ModelRegistry:
         return model.predict(X_processed)[0], model.predict_proba(X_processed)[0]
 
 
-# ── FastAPI app ────────────────────────────────────────────────────────────────
+
 app = FastAPI(title="Exploring the Adversity quotient of adoloscents a behavioural pattern")
 
 app.add_middleware(

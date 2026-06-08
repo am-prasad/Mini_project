@@ -1,0 +1,42 @@
+[
+    {
+        "feature": "Q2",
+        "importance": 0.019179467343530675
+    },
+    {
+        "feature": "Q6",
+        "importance": 0.018716529265145873
+    },
+    {
+        "feature": "Q9",
+        "importance": 0.01669039089498285
+    },
+    {
+        "feature": "Q3",
+        "importance": 0.015485220857020865
+    },
+    {
+        "feature": "Q5",
+        "importance": 0.014081640146794612
+    },
+    {
+        "feature": "Q8",
+        "importance": 0.013460449590929891
+    },
+    {
+        "feature": "Q4",
+        "importance": 0.012756425186135253
+    },
+    {
+        "feature": "Q7",
+        "importance": 0.012215992680707995
+    },
+    {
+        "feature": "Q1",
+        "importance": 0.009508058966691898
+    },
+    {
+        "feature": "Q10",
+        "importance": 0.007482560189192429
+    }
+]
