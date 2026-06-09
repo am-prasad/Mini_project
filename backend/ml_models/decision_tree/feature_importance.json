@@ -1,23 +1,23 @@
 [
     {
-        "feature": "Q2",
-        "importance": 0.06704381477108749
-    },
-    {
-        "feature": "Q5",
-        "importance": 0.05165179937907212
+        "feature": "Q9",
+        "importance": 0.09917255093682475
     },
     {
         "feature": "Q3",
-        "importance": 0.042147667147667156
+        "importance": 0.07128416084966074
+    },
+    {
+        "feature": "Q2",
+        "importance": 0.06108168559223733
+    },
+    {
+        "feature": "Q5",
+        "importance": 0.04014652957501222
     },
     {
         "feature": "Q1",
-        "importance": 0.019300144300144286
-    },
-    {
-        "feature": "Q9",
-        "importance": 0.007178932178932178
+        "importance": 0.0
     },
     {
         "feature": "Q4",
