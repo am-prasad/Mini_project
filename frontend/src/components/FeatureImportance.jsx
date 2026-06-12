@@ -63,7 +63,7 @@ function FeatureImportance({ data, isLoading }) {
   return (
     <div className="feature-importance">
       <div className="section-header">
-        <h2>🔬 Feature Importance (SHAP Analysis)</h2>
+        <h2>Feature Importance (SHAP Analysis)</h2>
         <p>Discover which questions most strongly influence AQ prediction</p>
       </div>
 

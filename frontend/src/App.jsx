@@ -198,25 +198,7 @@ function App() {
       />
 
       <main className="main-content">
-        {/* Backend status indicator */}
-        {!isPageLoading && !backendOnline && (
-          <div className="backend-status offline">
-            <span className="status-dot"></span>
-            Backend Offline — Start your FastAPI server at localhost:8000
-            <button className="btn btn-ghost btn-sm" onClick={handleRetry}>
-              Retry Connection
-            </button>
-          </div>
-        )}
-
-        {!isPageLoading && backendOnline && (
-          <div className="backend-status online">
-            <span className="status-dot"></span>
-            Backend Connected
-          </div>
-        )}
-
-        {/* Error alert */}
+      
         {error && (
           <ErrorAlert
             message={error}

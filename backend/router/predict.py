@@ -4,6 +4,8 @@ import numpy as np
 import logging
 from typing import Dict, List, Any
 
+from utils.csv_logger import log_prediction
+
 logger = logging.getLogger(__name__)
 class QuestionnaireInput(BaseModel):
     """Input schema for 10-question AQ questionnaire"""
@@ -186,9 +188,9 @@ async def predict_aq(questionnaire: QuestionnaireInput):
         behavioral_pattern = get_behavioral_pattern(final_aq_category, core_scores)
         recommendations = generate_recommendations(core_scores)
         
-        return PredictionResponse(
+        response = PredictionResponse(
             aq_category=final_aq_category,
-            aq_score=float(np.mean(list(core_scores.values()))), 
+            aq_score=float(np.mean(list(core_scores.values()))),
             confidence=avg_confidence,
             core_scores={k: float(v) for k, v in core_scores.items()},
             model_predictions=model_predictions,
@@ -198,6 +200,13 @@ async def predict_aq(questionnaire: QuestionnaireInput):
             behavioral_pattern=behavioral_pattern,
             recommendations=recommendations
         )
+
+        # ── Persist prediction to data/predictions_log.csv ────────────────────
+        # Logs Q1-Q10 (raw inputs), calculated CORE dimensions, AQ score,
+        # and numeric Target_Category (Low=0, Medium=1, High=2).
+        log_prediction(responses, final_aq_category)
+
+        return response
     
     except Exception as e:
         logger.error(f"Prediction error: {e}", exc_info=True)

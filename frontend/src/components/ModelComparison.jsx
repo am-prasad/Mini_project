@@ -49,7 +49,7 @@ function ModelComparison({ data, isLoading }) {
   return (
     <div className="model-comparison">
       <div className="section-header">
-        <h2>🤖 Model Comparison</h2>
+        <h2> Model Comparison</h2>
         <p>Performance metrics across different machine learning models</p>
       </div>
 
