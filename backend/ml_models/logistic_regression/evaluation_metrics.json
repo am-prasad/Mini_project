@@ -1,10 +1,10 @@
 [
     {
         "model_name": "Logistic Regression",
-        "accuracy": 0.8696,
-        "f1_score": 0.8808,
-        "auc_roc": 0.9591,
-        "cv_mean": 0.9123,
-        "cv_std": 0.0275
+        "accuracy": 0.9778,
+        "f1_score": 0.9778,
+        "auc_roc": 1.0,
+        "cv_mean": 0.9866,
+        "cv_std": 0.011
     }
 ]
