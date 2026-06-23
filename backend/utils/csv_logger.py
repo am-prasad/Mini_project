@@ -1,26 +1,3 @@
-"""
-csv_logger.py
--------------
-Appends every /predict response to  data/predictions_log.csv
-using the SAME column layout as the training dataset:
-
-    Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,
-    CONTROL,OWNERSHIP,REACH,ENDURANCE,AQ,Target_Category
-
-CORE dimensions are CALCULATED from Q1-Q10 using the same
-formulas as the model training notebook:
-    CONTROL   = (Q1 + Q5 + Q9) / 3
-    OWNERSHIP = (Q2 + Q6)      / 2
-    REACH     = (Q3 + Q7)      / 2
-    ENDURANCE = (Q4 + Q8 + Q10)/ 3
-    AQ        = mean(CONTROL, OWNERSHIP, REACH, ENDURANCE)
-
-Target_Category is mapped numerically to match the training CSV:
-    Low    → 0
-    Medium → 1
-    High   → 2
-"""
-
 import csv
 import logging
 import os
@@ -65,9 +42,7 @@ def _ensure_header():
         with open(LOG_CSV, "w", newline="", encoding="utf-8") as fh:
             csv.DictWriter(fh, fieldnames=_COLUMNS).writeheader()
         logger.info(f"CSV log created from scratch: {LOG_CSV}")
-    # If file already exists, its header is already there — just append rows.
-
-
+    
 def log_prediction(questionnaire_input: dict, aq_category: str) -> None:
     
     try:

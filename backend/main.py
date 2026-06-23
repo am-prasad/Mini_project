@@ -11,24 +11,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 logger = logging.getLogger(__name__)
 
 class ModelRegistry:
-    """Manage trained models and dynamic ML metadata.
-
-    Folder layout expected under `models_dir`:
-        ml_models/
-            logistic_regression/
-                logistic_regression_model.pkl
-                scaler.pkl              (optional – only for models that need scaling)
-                shap_explainer.pkl      (optional)
-                X_train.pkl             (optional)
-                evaluation_metrics.json (required – contains {"model_name": ...})
-                feature_importance.json (optional)
-            random_forest/
-                random_forest_model.pkl
-                shap_explainer.pkl
-                X_train.pkl
-                evaluation_metrics.json
-                feature_importance.json
-    """
+  
 
     def __init__(self, models_dir='ml_models'):
         self.models_dir = models_dir
@@ -47,7 +30,7 @@ class ModelRegistry:
 
         self.load_models()
 
-    # ------------------------------------------------------------------
+    
     def load_models(self):
         try:
             if not os.path.exists(self.models_dir):
