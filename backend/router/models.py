@@ -38,7 +38,8 @@ async def get_model_comparison():
         
      
         algorithms = [ModelMetrics(**model) for model in metrics_data]
-        best_model = max(metrics_data, key=lambda x: x['accuracy'])
+        best_model = max(metrics_data,key=lambda x:(x['accuracy'],x['f1_score'],x['auc_roc'],x['cv_mean'],-x['cv_std'] ))
+
         
         return ModelComparisonResponse(
             algorithms=algorithms,
