@@ -57,8 +57,17 @@ function FeatureImportance({ data, isLoading }) {
   }, [features]);
 
   const maxImportance = useMemo(() => {
-    return Math.max(...sortedFeatures.map(f => f.importance || 0), 0.01);
+    return Math.max(...sortedFeatures.map(f => f.importance || 0), 0.001);
   }, [sortedFeatures]);
+
+  // Returns a human-readable precision so small values never display as 0.00
+  const formatImportance = (val) => {
+    if (val === 0) return '0.0000';
+    if (val < 0.001) return val.toFixed(6);
+    if (val < 0.01)  return val.toFixed(4);
+    if (val < 0.1)   return val.toFixed(4);
+    return val.toFixed(4);
+  };
 
   return (
     <div className="feature-importance">
@@ -94,7 +103,7 @@ function FeatureImportance({ data, isLoading }) {
                     <span className="feature-description"> — {label}</span>
                   </div>
                   <span className="feature-importance-value">
-                    {importance.toFixed(2)}
+                    {formatImportance(importance)}
                   </span>
                 </div>
 

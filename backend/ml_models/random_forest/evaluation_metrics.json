@@ -3,8 +3,8 @@
         "model_name": "Random Forest",
         "accuracy": 0.9583,
         "f1_score": 0.9519,
-        "auc_roc": 0.965,
-        "cv_mean": 0.9141,
+        "auc_roc": 0.9754,
+        "cv_mean": 0.9149,
         "cv_std": 0.0258
     }
 ]

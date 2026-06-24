@@ -217,7 +217,7 @@ function ResultsDashboard({ results = {}, onReset }) {
       {Array.isArray(recommendations) && recommendations.length > 0 && (
         <div className="recommendations-section">
           <div className="section-header">
-            <h2>💡 Personalized Recommendations</h2>
+            <h2>Personalized Recommendations</h2>
             <p>Actionable steps to improve your Adversity Quotient</p>
           </div>
           <div className="recommendations-grid">
@@ -234,14 +234,14 @@ function ResultsDashboard({ results = {}, onReset }) {
       {/* Actionable Export Triggers */}
       <div className="export-section">
         <button className="btn btn-secondary" onClick={handlePrint}>
-          🖨️ Print Results
+          Print Results
         </button>
         <button className="btn btn-secondary" onClick={handleDownloadJSON}>
-          📥 Download JSON
+          Download JSON
         </button>
       </div>
 
-      {/* Navigation State Reset Element */}
+      
       <div className="reset-section">
         <button className="btn btn-primary btn-lg" onClick={onReset}>
           🔄 Take Another Assessment

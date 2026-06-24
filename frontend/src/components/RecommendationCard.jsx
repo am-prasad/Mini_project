@@ -6,21 +6,24 @@ const DIMENSION_COLORS = {
 };
 
 const PRIORITY_STYLES = {
+  Critical: 'high',
   High: 'high',
+  Moderate: 'medium',
   Medium: 'medium',
   Low: 'low',
   high: 'high',
+  moderate: 'medium',
   medium: 'medium',
   low: 'low',
 };
 
 function RecommendationCard({ recommendation }) {
   const {
-    dimension = 'General',
-    priority = 'Medium',
-    suggestion = '',
-    action_items = [],
-    expected_impact = '',
+    // Backend sends PascalCase keys: Dimension, Priority, Suggestion, Actions
+    Dimension: dimension = 'General',
+    Priority: priority = 'Medium',
+    Suggestion: suggestion = '',
+    Actions: action_items = [],
   } = recommendation;
 
   const dimStyle = DIMENSION_COLORS[dimension] || DIMENSION_COLORS.Control;
@@ -52,12 +55,7 @@ function RecommendationCard({ recommendation }) {
         )}
       </div>
 
-      {expected_impact && (
-        <div className="expected-impact">
-          <span className="impact-label">Expected Impact:</span>
-          <span className="impact-value">{expected_impact}</span>
-        </div>
-      )}
+
     </div>
   );
 }
