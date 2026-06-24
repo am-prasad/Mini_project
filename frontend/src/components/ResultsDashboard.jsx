@@ -47,13 +47,12 @@ function ResultsDashboard({ results = {}, onReset }) {
     }
   }, [categoryClass]);
 
-  // Dynamic Scale Detection: Determines if score uses a 5-point scale or 50-point scale
-  // Based on your payload (e.g., 2.79), this auto-allocates a max scale of 5.
+  
   const maxScore = useMemo(() => {
     return numericScore <= 5 ? 5 : 50;
   }, [numericScore]);
 
-  // Percentage calculation clamped between 0 and 100
+  
   const scorePercent = useMemo(() => {
     if (maxScore === 0) return 0;
     const percent = Math.round((numericScore / maxScore) * 100);

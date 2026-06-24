@@ -29,7 +29,7 @@ function LocalShapChart({ data, predictedCategory }) {
       {/* ── Header ── */}
       <div className="local-shap-header">
         <div className="local-shap-title-row">
-          <span className="local-shap-icon">🔍</span>
+          <span className="local-shap-icon"></span>
           <h3 className="local-shap-title">Your Personal SHAP Explanation</h3>
         </div>
         <p className="local-shap-subtitle">
