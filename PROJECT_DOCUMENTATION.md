@@ -409,13 +409,13 @@ if isinstance(raw_shap, list):
 
 ```mermaid
 flowchart LR
-    A[Raw SHAP array\nfrom TreeExplainer] --> B{Is list?\nMulti-class}
-    B -->|Yes| C[Index by\npred_class_idx]
-    B -->|No| D[3-D array\nslice axis 2]
-    C --> E[Signed values\nper feature]
+    A["Raw SHAP array<br/>from TreeExplainer"] --> B{"Is list?<br/>Multi-class"}
+    B -->|Yes| C["Index by<br/>pred_class_idx"]
+    B -->|No| D["3-D array<br/>slice axis 2"]
+    C --> E["Signed values<br/>per feature"]
     D --> E
-    E --> F[Sort by |shap_value|\ndescending]
-    F --> G[local_shap JSON\nin response]
+    E --> F["Sort by abs(shap_value)<br/>descending"]
+    F --> G["local_shap JSON<br/>in response"]
 ```
 
 ---
