@@ -42,7 +42,7 @@ function FeatureImportance({ data, isLoading }) {
         </div>
         <div className="no-data-message">
           <div className="empty-state-icon">🔍</div>
-          <h3>No Feature Data Available</h3>
+          <h3>No Global SHAP Data Available</h3>
           <p>Start the backend server to load SHAP feature importance data.</p>
         </div>
       </div>
@@ -63,12 +63,12 @@ function FeatureImportance({ data, isLoading }) {
   return (
     <div className="feature-importance">
       <div className="section-header">
-        <h2>Feature Importance (SHAP Analysis)</h2>
-        <p>Discover which questions most strongly influence AQ prediction</p>
+        <h2>Global SHAP Feature Importance</h2>
+        <p>Average feature influence across all training samples — which questions matter most in general</p>
       </div>
 
       <div className="importance-chart card">
-        <h3> Global Feature Rankings</h3>
+        <h3>Global SHAP Rankings — Training Data</h3>
 
         <div className="feature-rows">
           {sortedFeatures.map((feature, idx) => {

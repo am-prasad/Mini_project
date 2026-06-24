@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import RecommendationCard from './RecommendationCard';
 import CoreDimensions from './CoreDimensions';
+import LocalShapChart from './LocalShapChart';
 import '../styles/ResultsDashboard.css';
 
 function ResultsDashboard({ results = {}, onReset }) {
@@ -13,6 +14,7 @@ function ResultsDashboard({ results = {}, onReset }) {
     weak_dimensions = [],
     behavioral_pattern = '',
     recommendations = [],
+    local_shap = [],
   } = results;
 
   // 1. Sanitize top-level numbers safely to prevent NaN
@@ -139,6 +141,11 @@ function ResultsDashboard({ results = {}, onReset }) {
           </div>
         </div>
       </div>
+
+      {/* Local SHAP — per-response explanation */}
+      {Array.isArray(local_shap) && local_shap.length > 0 && (
+        <LocalShapChart data={local_shap} predictedCategory={aq_category} />
+      )}
 
       {/* CORE Dimensions Grid */}
       {core_scores && Object.keys(core_scores).length > 0 && (

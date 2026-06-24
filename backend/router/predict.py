@@ -35,6 +35,7 @@ class PredictionResponse(BaseModel):
     model_predictions: Dict[str, str]
     model_confidences: Dict[str, float]
     feature_importance: List[Dict[str, Any]]
+    local_shap: List[Dict[str, Any]]          # signed SHAP per feature for predicted class
     weak_dimensions: List[Dict[str, Any]]
     behavioral_pattern: str
     recommendations: List[Dict[str, Any]]
@@ -171,18 +172,56 @@ async def predict_aq(questionnaire: QuestionnaireInput):
         
         
         feature_importance = []
+        local_shap = []
         shap_explainer = model_registry.shap_explainers.get(best_model_name)
         if shap_explainer:
             try:
-                shap_vals = shap_explainer.shap_values(X)
-                vals = np.mean([np.abs(sv[0]) for sv in shap_vals], axis=0) if isinstance(shap_vals, list) else np.abs(shap_vals[0])
+                raw_shap = shap_explainer.shap_values(X)
                 feature_names = ['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8', 'Q9', 'Q10']
-                
-                fi_dict = dict(zip(feature_names, vals))
+
+                # ── Mean |SHAP| across classes → top-3 local importance (existing field) ──
+                if isinstance(raw_shap, list):
+                    abs_vals = np.mean([np.abs(sv[0]) for sv in raw_shap], axis=0)
+                else:
+                    arr = np.array(raw_shap)
+                    abs_vals = np.mean(np.abs(arr[0]), axis=-1) if arr.ndim == 3 else np.abs(arr[0])
+                fi_dict = dict(zip(feature_names, abs_vals))
                 sorted_fi = sorted(fi_dict.items(), key=lambda x: x[1], reverse=True)
-                feature_importance = [{'question': k, 'importance': float(v), 'rank': idx + 1} for idx, (k, v) in enumerate(sorted_fi[:3])]
+                feature_importance = [
+                    {'question': k, 'importance': float(v), 'rank': idx + 1}
+                    for idx, (k, v) in enumerate(sorted_fi[:3])
+                ]
+
+                # ── Signed SHAP for predicted class → local waterfall chart ──
+                pred_class_idx = {v: k for k, v in class_mapping.items()}.get(final_aq_category, 2)
+                if isinstance(raw_shap, list):
+                    signed_vals = (
+                        raw_shap[pred_class_idx][0]
+                        if pred_class_idx < len(raw_shap)
+                        else raw_shap[-1][0]
+                    )
+                else:
+                    arr = np.array(raw_shap)
+                    signed_vals = arr[0, :, pred_class_idx] if arr.ndim == 3 else arr[0]
+
+                local_shap = sorted(
+                    [
+                        {
+                            "feature": f,
+                            "shap_value": round(float(v), 6),
+                            "direction": (
+                                f"pushes toward {final_aq_category} AQ"
+                                if float(v) > 0
+                                else f"pushes away from {final_aq_category} AQ"
+                            ),
+                        }
+                        for f, v in zip(feature_names, signed_vals)
+                    ],
+                    key=lambda x: abs(x["shap_value"]),
+                    reverse=True,
+                )
             except Exception as e:
-                logger.warning(f"Failed to calculate local SHAP values: {e}")
+                logger.warning(f"Failed to calculate SHAP explanation: {e}", exc_info=True)
 
         weak_dimensions = identify_weak_dimensions(core_scores)
         behavioral_pattern = get_behavioral_pattern(final_aq_category, core_scores)
@@ -196,6 +235,7 @@ async def predict_aq(questionnaire: QuestionnaireInput):
             model_predictions=model_predictions,
             model_confidences=model_confidences,
             feature_importance=feature_importance,
+            local_shap=local_shap,
             weak_dimensions=weak_dimensions,
             behavioral_pattern=behavioral_pattern,
             recommendations=recommendations
