@@ -25,8 +25,9 @@ class ModelRegistry:
         self.X_trains = {}
 
         # Aggregated metadata
-        self.evaluation_metrics = []      # list of dicts, one per model
-        self.global_feature_importance = []  # from first model found
+        self.evaluation_metrics = []       # list of dicts, one per model
+        self.global_feature_importance = [] # resolved after all models load (best model)
+        self._all_feature_importances = {}  # {model_name: [...]} – collected during scan
 
         self.load_models()
 
@@ -93,11 +94,45 @@ class ModelRegistry:
                 
                 self.evaluation_metrics.extend(metrics)
 
-                # ── 5. Feature importance – use first model found as global default
+                # ── 5. Feature importance – collect per model; resolve best later
                 fi_path = os.path.join(subfolder_path, 'feature_importance.json')
-                if os.path.exists(fi_path) and not self.global_feature_importance:
+                if os.path.exists(fi_path):
                     with open(fi_path, 'r') as f:
-                        self.global_feature_importance = json.load(f)
+                        self._all_feature_importances[model_name] = json.load(f)
+
+            # ── 6. Resolve global feature importance from the BEST model ─────
+            # Best = highest accuracy → then f1 → then auc_roc → lowest cv_std
+            if self.evaluation_metrics and self._all_feature_importances:
+                try:
+                    best = max(
+                        self.evaluation_metrics,
+                        key=lambda x: (
+                            x.get('accuracy', 0),
+                            x.get('f1_score', 0),
+                            x.get('auc_roc', 0),
+                            -x.get('cv_std', 1),
+                        )
+                    )
+                    best_name = best['model_name']
+                    if best_name in self._all_feature_importances:
+                        self.global_feature_importance = self._all_feature_importances[best_name]
+                        logger.info(
+                            f"Global feature importance sourced from best model: '{best_name}' "
+                            f"(accuracy={best.get('accuracy', 0):.4f})"
+                        )
+                    else:
+                        # Fallback: any available
+                        fallback_name = next(iter(self._all_feature_importances))
+                        self.global_feature_importance = self._all_feature_importances[fallback_name]
+                        logger.warning(
+                            f"Best model '{best_name}' has no feature_importance.json. "
+                            f"Falling back to '{fallback_name}'."
+                        )
+                except Exception as e:
+                    logger.warning(f"Could not resolve best model for feature importance: {e}")
+                    if self._all_feature_importances:
+                        fallback_name = next(iter(self._all_feature_importances))
+                        self.global_feature_importance = self._all_feature_importances[fallback_name]
 
             logger.info(
                 f"ModelRegistry ready – loaded {len(self.models)} model(s): "

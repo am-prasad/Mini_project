@@ -16,6 +16,7 @@ class FeatureImportanceResponse(BaseModel):
     features: List[FeatureImportance]
     total_features: int
     interpretation: Dict[str, str]
+    source_model: str = ""   # which model's data is being displayed
 
 
 QUESTION_DESCRIPTIONS = {
@@ -60,10 +61,28 @@ async def get_global_feature_importance():
             for idx, f in enumerate(dynamic_features)
         }
         
+        # Determine which model's data we are serving
+        best_model_name = ""
+        if model_registry.evaluation_metrics:
+            try:
+                best = max(
+                    model_registry.evaluation_metrics,
+                    key=lambda x: (
+                        x.get('accuracy', 0),
+                        x.get('f1_score', 0),
+                        x.get('auc_roc', 0),
+                        -x.get('cv_std', 1),
+                    )
+                )
+                best_model_name = best.get('model_name', '')
+            except Exception:
+                pass
+
         return FeatureImportanceResponse(
             features=features,
             total_features=len(dynamic_features),
-            interpretation=interpretation
+            interpretation=interpretation,
+            source_model=best_model_name
         )
         
     except HTTPException:

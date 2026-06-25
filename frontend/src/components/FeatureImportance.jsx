@@ -49,7 +49,7 @@ function FeatureImportance({ data, isLoading }) {
     );
   }
 
-  const { features } = data;
+  const { features, source_model } = data;
 
   // Sort by importance descending
   const sortedFeatures = useMemo(() => {
@@ -60,7 +60,7 @@ function FeatureImportance({ data, isLoading }) {
     return Math.max(...sortedFeatures.map(f => f.importance || 0), 0.001);
   }, [sortedFeatures]);
 
-  // Returns a human-readable precision so small values never display as 0.00
+  
   const formatImportance = (val) => {
     if (val === 0) return '0.0000';
     if (val < 0.001) return val.toFixed(6);
@@ -72,12 +72,30 @@ function FeatureImportance({ data, isLoading }) {
   return (
     <div className="feature-importance">
       <div className="section-header">
-        <h2>Global SHAP Feature Importance</h2>
-        <p>Average feature influence across all training samples — which questions matter most in general</p>
+        <h2>Global Feature Importance</h2>
+        <p>
+          Average feature influence across all training samples — which questions matter most in general
+          {source_model && (
+            <span style={{
+              display: 'inline-block',
+              marginLeft: '10px',
+              padding: '2px 10px',
+              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+              color: '#fff',
+              borderRadius: '12px',
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              verticalAlign: 'middle',
+              letterSpacing: '0.03em'
+            }}>
+               {source_model}
+            </span>
+          )}
+        </p>
       </div>
 
       <div className="importance-chart card">
-        <h3>Global SHAP Rankings — Training Data</h3>
+       
 
         <div className="feature-rows">
           {sortedFeatures.map((feature, idx) => {
