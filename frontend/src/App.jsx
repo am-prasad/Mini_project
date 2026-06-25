@@ -9,7 +9,6 @@ import ErrorAlert from './components/ErrorAlert';
 import {
   predictAQ,
   getModelComparison,
-  getFeatureImportance,
   getCoreDimensions,
   checkHealth,
 } from './api/service';
@@ -29,7 +28,6 @@ function App() {
   // Data states
   const [results, setResults] = useState(null);
   const [modelData, setModelData] = useState(null);
-  const [featureData, setFeatureData] = useState(null);
   const [dimensionData, setDimensionData] = useState(null);
 
   // UI states
@@ -52,15 +50,13 @@ function App() {
         const healthResult = await checkHealth();
         setBackendOnline(true);
 
-        const [dimensions, models, features] = await Promise.allSettled([
+        const [dimensions, models] = await Promise.allSettled([
           getCoreDimensions(),
           getModelComparison(),
-          getFeatureImportance(),
         ]);
 
         if (dimensions.status === 'fulfilled') setDimensionData(dimensions.value);
         if (models.status === 'fulfilled') setModelData(models.value);
-        if (features.status === 'fulfilled') setFeatureData(features.value);
       } catch (err) {
         setBackendOnline(false);
         console.warn('Backend not available:', err.message);
@@ -82,10 +78,7 @@ function App() {
       setResults(prediction);
       setActiveTab('results');
 
-      // Also refresh feature importance if included in response
-      if (prediction.feature_importance) {
-        setFeatureData(prev => prev || { features: prediction.feature_importance });
-      }
+      // Results only — feature importance tab fetches itself
     } catch (err) {
       setError(err.message);
     } finally {
@@ -117,14 +110,12 @@ function App() {
     try {
       await checkHealth();
       setBackendOnline(true);
-      const [dimensions, models, features] = await Promise.allSettled([
+      const [dimensions, models] = await Promise.allSettled([
         getCoreDimensions(),
         getModelComparison(),
-        getFeatureImportance(),
       ]);
       if (dimensions.status === 'fulfilled') setDimensionData(dimensions.value);
       if (models.status === 'fulfilled') setModelData(models.value);
-      if (features.status === 'fulfilled') setFeatureData(features.value);
     } catch (err) {
       setBackendOnline(false);
       setError('Cannot connect to backend server. Please ensure it is running.');
@@ -176,12 +167,7 @@ function App() {
         );
 
       case 'features':
-        return (
-          <FeatureImportance
-            data={featureData}
-            isLoading={isPageLoading && !featureData}
-          />
-        );
+        return <FeatureImportance />;
 
       default:
         return null;

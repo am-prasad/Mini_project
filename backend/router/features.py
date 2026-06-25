@@ -1,5 +1,5 @@
-from fastapi import APIRouter, HTTPException
-from typing import List, Dict
+from fastapi import APIRouter, HTTPException, Query
+from typing import List, Dict, Optional
 import logging
 from pydantic import BaseModel
 
@@ -16,75 +16,111 @@ class FeatureImportanceResponse(BaseModel):
     features: List[FeatureImportance]
     total_features: int
     interpretation: Dict[str, str]
-    source_model: str = ""   # which model's data is being displayed
+    source_model: str = ""            # which model's data is displayed
+    source_type: str = ""             # "shap" (live computed) or "json" (stored file)
+    available_models: List[str] = []  # all loaded model names for frontend dropdown
 
 
 QUESTION_DESCRIPTIONS = {
-    'Q1': 'Can overcome academic difficulties', 
+    'Q1': 'Can overcome academic difficulties',
     'Q2': 'Takes responsibility for improvement',
-    'Q3': 'Setback doesn\'t affect confidence in other subjects', 
+    'Q3': "Setback doesn't affect confidence in other subjects",
     'Q4': 'Academic problems are temporary',
-    'Q5': 'Control response under pressure', 
+    'Q5': 'Control response under pressure',
     'Q6': 'Reflects on mistakes to improve',
-    'Q7': 'Failures don\'t define overall ability', 
+    'Q7': "Failures don't define overall ability",
     'Q8': 'Motivated when results not immediate',
-    'Q9': 'Actions influence academic outcomes', 
+    'Q9': 'Actions influence academic outcomes',
     'Q10': 'Recovers quickly from disappointment'
 }
 
 
-
 @router.get("/feature-importance", response_model=FeatureImportanceResponse)
-async def get_global_feature_importance():
-    try:
-     
-        from main import model_registry
-        
-        if not model_registry.global_feature_importance:
-             raise HTTPException(
-                 status_code=404, 
-                 detail="Global feature importance JSON not found. Please ensure 'feature_importance.json' is generated during training."
-             )
-             
-        dynamic_features = model_registry.global_feature_importance
+async def get_global_feature_importance(
+    model: Optional[str] = Query(
+        None,
+        description=(
+            "Name of the model whose feature importance to return. "
+            "Omit to use the best model automatically."
+        )
+    )
+):
+    """
+    Return global feature importance (mean |SHAP| across training data).
 
+    - With no ?model= param  → uses the best-accuracy model
+    - With ?model=Random Forest → uses that specific model
+
+    Priority for data source:
+      1. Live-computed mean |SHAP| via shap_explainer.pkl + X_train.pkl
+      2. Fallback: stored feature_importance.json (Gini/tree importance)
+    """
+    try:
+        from main import model_registry
+
+        available_models = sorted(model_registry.models.keys())
+
+        if not available_models:
+            raise HTTPException(status_code=404, detail="No models loaded.")
+
+        # ── Resolve target model ───────────────────────────────────────────────
+        if model and model in model_registry.models:
+            target_model = model
+        else:
+            # Auto-select best model
+            target_model = model_registry.get_best_model_name()
+            if target_model is None:
+                target_model = available_models[0]
+
+        # ── Compute true mean |SHAP| from explainer + X_train ─────────────────
+        fi_data   = model_registry.compute_global_shap(target_model)
+        src_type  = "shap"
+
+        # ── Fallback: stored feature_importance.json ───────────────────────────
+        if fi_data is None:
+            fi_data  = model_registry._all_feature_importances.get(target_model, [])
+            src_type = "json"
+            logger.warning(
+                f"Using stored feature_importance.json for '{target_model}' "
+                f"(SHAP computation unavailable)."
+            )
+
+        if not fi_data:
+            raise HTTPException(
+                status_code=404,
+                detail=(
+                    f"No feature importance data available for '{target_model}'. "
+                    "Ensure shap_explainer.pkl + X_train.pkl or feature_importance.json exist."
+                )
+            )
+
+        # ── Build response objects ────────────────────────────────────────────
         features = [
             FeatureImportance(
                 feature=f['feature'],
                 importance=f['importance'],
                 rank=f.get('rank', idx + 1)
-            ) for idx, f in enumerate(dynamic_features)
+            )
+            for idx, f in enumerate(fi_data)
         ]
-        
+
         interpretation = {
-            f['feature']: f"{QUESTION_DESCRIPTIONS.get(f['feature'], 'N/A')} - Rank #{f.get('rank', idx + 1)}"
-            for idx, f in enumerate(dynamic_features)
+            f['feature']: (
+                f"{QUESTION_DESCRIPTIONS.get(f['feature'], 'N/A')} "
+                f"— Rank #{f.get('rank', idx + 1)}"
+            )
+            for idx, f in enumerate(fi_data)
         }
-        
-        # Determine which model's data we are serving
-        best_model_name = ""
-        if model_registry.evaluation_metrics:
-            try:
-                best = max(
-                    model_registry.evaluation_metrics,
-                    key=lambda x: (
-                        x.get('accuracy', 0),
-                        x.get('f1_score', 0),
-                        x.get('auc_roc', 0),
-                        -x.get('cv_std', 1),
-                    )
-                )
-                best_model_name = best.get('model_name', '')
-            except Exception:
-                pass
 
         return FeatureImportanceResponse(
             features=features,
-            total_features=len(dynamic_features),
+            total_features=len(fi_data),
             interpretation=interpretation,
-            source_model=best_model_name
+            source_model=target_model,
+            source_type=src_type,
+            available_models=available_models,
         )
-        
+
     except HTTPException:
         raise
     except Exception as e:

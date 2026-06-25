@@ -4,6 +4,7 @@ import logging
 import joblib
 import json
 import os
+import numpy as np
 
 from router import predict, models, features, dimensions, health
 
@@ -145,6 +146,74 @@ class ModelRegistry:
             return False
 
     
+    def get_best_model_name(self):
+        """Return the name of the best model by accuracy → f1 → auc_roc → lowest cv_std."""
+        if not self.evaluation_metrics:
+            return None
+        best = max(
+            self.evaluation_metrics,
+            key=lambda x: (
+                x.get('accuracy', 0),
+                x.get('f1_score', 0),
+                x.get('auc_roc', 0),
+                -x.get('cv_std', 1),
+            )
+        )
+        return best.get('model_name')
+
+    def compute_global_shap(self, model_name):
+        """
+        Compute true mean |SHAP| across all training samples for the given model.
+        Uses the stored shap_explainer.pkl + X_train.pkl.
+        Returns a sorted list of {feature, importance, rank} dicts, or None on failure.
+        """
+        explainer = self.shap_explainers.get(model_name)
+        X_train   = self.X_trains.get(model_name)
+
+        if explainer is None or X_train is None:
+            logger.warning(
+                f"compute_global_shap: missing explainer or X_train for '{model_name}'"
+            )
+            return None
+
+        try:
+            scaler = self.scalers.get(model_name)
+            X_proc = scaler.transform(X_train) if scaler is not None else X_train
+
+            raw = explainer.shap_values(X_proc)
+
+            # raw can be:
+            #   list of arrays  → [n_classes] each (n_samples, n_features)
+            #   3-D ndarray     → (n_samples, n_features, n_classes)
+            #   2-D ndarray     → (n_samples, n_features)  [binary]
+            if isinstance(raw, list):
+                # Average |SHAP| across classes, then across samples
+                per_class = np.stack([np.abs(sv) for sv in raw], axis=0)  # (n_classes, n_samples, n_features)
+                global_imp = np.mean(per_class, axis=(0, 1))              # (n_features,)
+            elif raw.ndim == 3:
+                global_imp = np.mean(np.abs(raw), axis=(0, 2))            # (n_features,)
+            else:
+                global_imp = np.mean(np.abs(raw), axis=0)                 # (n_features,)
+
+            feature_names = ['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8', 'Q9', 'Q10']
+            fi = [
+                {"feature": feat, "importance": float(global_imp[i]), "rank": 0}
+                for i, feat in enumerate(feature_names)
+            ]
+            fi.sort(key=lambda x: x["importance"], reverse=True)
+            for i, item in enumerate(fi):
+                item["rank"] = i + 1
+
+            logger.info(
+                f"compute_global_shap: computed true mean|SHAP| for '{model_name}' "
+                f"(top feature: {fi[0]['feature']} = {fi[0]['importance']:.4f})"
+            )
+            return fi
+
+        except Exception as exc:
+            logger.warning(f"compute_global_shap failed for '{model_name}': {exc}")
+            return None
+
     def predict(self, X, model_name):
         """Return (prediction_label, probabilities) for the given model."""
         model = self.models[model_name]

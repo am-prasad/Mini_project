@@ -44,8 +44,11 @@ export async function getModelComparison() {
   return fetchWithTimeout(`${BASE_URL}/model-comparison`);
 }
 
-export async function getFeatureImportance() {
-  return fetchWithTimeout(`${BASE_URL}/feature-importance`);
+export async function getFeatureImportance(modelName = null) {
+  const url = modelName
+    ? `${BASE_URL}/feature-importance?model=${encodeURIComponent(modelName)}`
+    : `${BASE_URL}/feature-importance`;
+  return fetchWithTimeout(url);
 }
 
 export async function getCoreDimensions() {
