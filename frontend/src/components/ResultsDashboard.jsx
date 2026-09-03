@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import RecommendationCard from './RecommendationCard';
 import CoreDimensions from './CoreDimensions';
 import LocalShapChart from './LocalShapChart';
+import AcademicPerformanceProfile from './AcademicPerformanceProfile';
 import '../styles/ResultsDashboard.css';
 
 function ResultsDashboard({ results = {}, onReset }) {
@@ -15,6 +16,7 @@ function ResultsDashboard({ results = {}, onReset }) {
     behavioral_pattern = '',
     recommendations = [],
     local_shap = [],
+    academic_profile = null,
   } = results;
 
   // 1. Sanitize top-level numbers safely to prevent NaN
@@ -151,6 +153,11 @@ function ResultsDashboard({ results = {}, onReset }) {
         <CoreDimensions scores={core_scores} />
       )}
 
+      {/* Academic Performance Profile */}
+      {academic_profile && (
+        <AcademicPerformanceProfile academic_profile={academic_profile} />
+      )}
+
       {/* Weak Dimensions Summary Section */}
       {Array.isArray(weak_dimensions) && weak_dimensions.length > 0 && (
         <div className="weak-section">
@@ -160,14 +167,14 @@ function ResultsDashboard({ results = {}, onReset }) {
           </div>
           <div className="weak-cards">
             {weak_dimensions.map((dim, idx) => {
-              // FIXED: Corrected key referencing target from 'current_score' to backend payload 'score'
+              
               const current = Number(dim?.score);
               const sanitizedCurrent = isNaN(current) ? 0 : current;
               
               const target = Number(dim?.target_score);
               const sanitizedTarget = isNaN(target) ? 0 : target;
               
-              // FIXED: Calculated delta securely to guarantee precision consistency 
+               
               const gap = sanitizedTarget - sanitizedCurrent > 0 ? sanitizedTarget - sanitizedCurrent : 0;
 
               return (
@@ -203,7 +210,7 @@ function ResultsDashboard({ results = {}, onReset }) {
       {behavioral_pattern && (
         <div className="pattern-section">
           <div className="section-header">
-            <h2>🧠 Behavioral Pattern</h2>
+            <h2> Behavioral Pattern</h2>
             <p>Your resilience and personality interpretation</p>
           </div>
           <div className="pattern-card">
