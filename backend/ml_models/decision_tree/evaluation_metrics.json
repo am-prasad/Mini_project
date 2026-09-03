@@ -1,10 +1,10 @@
 [
     {
         "model_name": "Decision Tree",
-        "accuracy": 0.7917,
-        "f1_score": 0.8347,
-        "auc_roc": 0.9034,
-        "cv_mean": 0.7935,
-        "cv_std": 0.0681
+        "accuracy": 0.6923,
+        "f1_score": 0.7587,
+        "auc_roc": 0.9721,
+        "cv_mean": 0.8077,
+        "cv_std": 0.0843
     }
 ]

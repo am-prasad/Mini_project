@@ -4,16 +4,16 @@ import { getFeatureImportance } from '../api/service';
 import '../styles/FeatureImportance.css';
 
 const QUESTION_LABELS = {
-  Q1: 'Influence on academic outcomes',
-  Q2: 'Recovery from disappointment',
-  Q3: 'Motivation without visible results',
-  Q4: "Failures don't define ability",
-  Q5: 'Learning from mistakes',
-  Q6: 'Control under pressure',
-  Q7: 'Problems are temporary',
-  Q8: 'Confidence across subjects',
-  Q9: 'Taking responsibility',
-  Q10: 'Finding ways to overcome',
+  Q1: 'Influence on academic outcomes (Control)',
+  Q2: 'Recovery from disappointment (Ownership)',
+  Q3: 'Motivation without visible results (Reach)',
+  Q4: "Failures don't define ability (Endurance)",
+  Q5: 'Control under pressure (Control)',
+  Q6: 'Learning from mistakes (Ownership)',
+  Q7: 'Problems are temporary (Reach)',
+  Q8: 'Confidence across subjects (Endurance)',
+  Q9: 'Taking responsibility (Control)',
+  Q10: 'Finding ways to overcome (Endurance)',
 };
 
 const INSIGHTS = {

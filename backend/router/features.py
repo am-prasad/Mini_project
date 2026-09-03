@@ -22,16 +22,16 @@ class FeatureImportanceResponse(BaseModel):
 
 
 QUESTION_DESCRIPTIONS = {
-    'Q1': 'Can overcome academic difficulties',
-    'Q2': 'Takes responsibility for improvement',
-    'Q3': "Setback doesn't affect confidence in other subjects",
-    'Q4': 'Academic problems are temporary',
-    'Q5': 'Control response under pressure',
-    'Q6': 'Reflects on mistakes to improve',
-    'Q7': "Failures don't define overall ability",
-    'Q8': 'Motivated when results not immediate',
-    'Q9': 'Actions influence academic outcomes',
-    'Q10': 'Recovers quickly from disappointment'
+    'Q1': 'Influence on academic outcomes (Control)',
+    'Q2': 'Recovery from disappointment (Ownership)',
+    'Q3': 'Motivation without visible reward (Reach)',
+    'Q4': "Failures don't define ability (Endurance)",
+    'Q5': 'Control under pressure (Control)',
+    'Q6': 'Learning from mistakes (Ownership)',
+    'Q7': 'Problems are temporary (Reach)',
+    'Q8': 'Confidence across subjects (Endurance)',
+    'Q9': 'Taking responsibility (Control)',
+    'Q10': 'Finding ways to overcome (Endurance)'
 }
 
 

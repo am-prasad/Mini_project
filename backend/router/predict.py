@@ -26,6 +26,20 @@ class QuestionnaireInput(BaseModel):
             raise ValueError("Response must be between 1 and 5")
         return v
 
+class AcademicIndicator(BaseModel):
+    name: str
+    score: int          # 0-100
+    rating: str         # Excellent / Good / Moderate / Needs Work
+    description: str
+
+class AcademicProfile(BaseModel):
+    overall_index: int
+    outlook: str        # High / Medium / Low
+    headline: str
+    summary: str
+    indicators: List[AcademicIndicator]
+    dimension_impact: List[Dict[str, Any]]
+
 class PredictionResponse(BaseModel):
     """Response schema for prediction"""
     aq_category: str
@@ -39,6 +53,7 @@ class PredictionResponse(BaseModel):
     weak_dimensions: List[Dict[str, Any]]
     behavioral_pattern: str
     recommendations: List[Dict[str, Any]]
+    academic_profile: AcademicProfile
 
 router = APIRouter(prefix="", tags=["Prediction"])
 
@@ -77,6 +92,139 @@ def get_behavioral_pattern(ml_category: str, core_scores: Dict) -> str:
         return f"MODERATELY RESILIENT: Solid resilience detected. Strongest: {strongest}, Weakest: {weakest}. Focus on strengthening your {weakest} dimension."
     else:
         return f"BUILDING RESILIENCE: ML flagged low resilience. Priority is to build your {weakest} dimension. External support and mentorship recommended."
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Academic Performance Profile
+# Maps CORE dimension scores → research-backed academic indicators
+# ─────────────────────────────────────────────────────────────────────────────
+
+_ACADEMIC_DESCRIPTIONS = {
+    'Academic Persistence': (
+        'Likelihood of persisting through difficult courses, long projects, '
+        'and multi-semester challenges without giving up.'
+    ),
+    'Grade Recovery Speed': (
+        'How quickly the student bounces back from low marks by actively '
+        'reviewing mistakes and adapting their study strategy.'
+    ),
+    'Burnout Resistance': (
+        'Ability to manage exam-period stress without spillover across '
+        'subjects or loss of overall motivation.'
+    ),
+    'Academic Self-Efficacy': (
+        'Belief in one\'s own ability to influence academic outcomes '
+        'through focused effort and problem-solving.'
+    ),
+    'Stress Compartmentalisation': (
+        'Capacity to prevent one bad result from affecting confidence or '
+        'performance in other academic areas.'
+    ),
+    'Learning Agility': (
+        'Speed of adapting to new topics, new teaching styles, and course '
+        'format changes while maintaining accountability.'
+    ),
+}
+
+_OUTLOOK_TEXT = {
+    'High': (
+        'Strong Academic Potential',
+        'This student is likely to perform well under pressure, recover from '
+        'setbacks quickly, and maintain sustained academic engagement.'
+    ),
+    'Medium': (
+        'Developing Academic Resilience',
+        'This student shows a reasonable foundation but may struggle during '
+        'high-stress periods like exams or project deadlines.'
+    ),
+    'Low': (
+        'Academic Support Recommended',
+        'This student may find it difficult to cope with academic adversity. '
+        'Early intervention and mentoring is strongly advised.'
+    ),
+}
+
+_DIMENSION_IMPACT = [
+    {
+        'dimension': 'Control',
+        'icon': '🎯',
+        'academic_implication': 'Self-directed study, proactive help-seeking, strong study habits',
+        'risk_if_low': 'Learned helplessness, poor time management',
+    },
+    {
+        'dimension': 'Ownership',
+        'icon': '🔑',
+        'academic_implication': 'Takes responsibility for grades, learns from exam feedback',
+        'risk_if_low': 'Blames external factors, repeats same mistakes',
+    },
+    {
+        'dimension': 'Reach',
+        'icon': '🌐',
+        'academic_implication': 'Isolates subject failures, maintains broad academic confidence',
+        'risk_if_low': 'One failure cascades into overall academic decline',
+    },
+    {
+        'dimension': 'Endurance',
+        'icon': '⏳',
+        'academic_implication': 'Long-term commitment, project completion, low dropout risk',
+        'risk_if_low': 'Short-term thinking, prone to abandoning hard courses',
+    },
+]
+
+def _rating(score: int) -> str:
+    if score >= 80: return 'Excellent'
+    if score >= 60: return 'Good'
+    if score >= 40: return 'Moderate'
+    return 'Needs Work'
+
+def compute_academic_profile(core_scores: Dict, aq_category: str) -> AcademicProfile:
+    """Derive academic performance indicators from CORE dimension scores."""
+    c = float(core_scores.get('Control',   0))
+    o = float(core_scores.get('Ownership', 0))
+    r = float(core_scores.get('Reach',     0))
+    e = float(core_scores.get('Endurance', 0))
+
+    # Each indicator is a weighted blend of the most relevant dimensions,
+    # scaled to a 0-100 percentage.
+    raw = {
+        'Academic Persistence':        int(round(((e * 0.6 + c * 0.4) / 5) * 100)),
+        'Grade Recovery Speed':        int(round(((o * 0.55 + c * 0.45) / 5) * 100)),
+        'Burnout Resistance':          int(round(((r * 0.6 + e * 0.4) / 5) * 100)),
+        'Academic Self-Efficacy':      int(round((c / 5) * 100)),
+        'Stress Compartmentalisation': int(round(((r * 0.7 + o * 0.3) / 5) * 100)),
+        'Learning Agility':            int(round(((o * 0.5 + e * 0.3 + c * 0.2) / 5) * 100)),
+    }
+
+    indicators = [
+        AcademicIndicator(
+            name=name,
+            score=score,
+            rating=_rating(score),
+            description=_ACADEMIC_DESCRIPTIONS[name],
+        )
+        for name, score in raw.items()
+    ]
+
+    overall_index = int(round(sum(raw.values()) / len(raw)))
+    outlook_key   = aq_category if aq_category in _OUTLOOK_TEXT else 'Medium'
+    headline, summary = _OUTLOOK_TEXT[outlook_key]
+
+    # Enrich dimension_impact with the student's actual scores
+    dimension_impact = [
+        {
+            **entry,
+            'score': round(float(core_scores.get(entry['dimension'], 0)), 2),
+        }
+        for entry in _DIMENSION_IMPACT
+    ]
+
+    return AcademicProfile(
+        overall_index=overall_index,
+        outlook=outlook_key,
+        headline=headline,
+        summary=summary,
+        indicators=indicators,
+        dimension_impact=dimension_impact,
+    )
 
 def generate_recommendations(core_scores: Dict) -> List[Dict]:
     """Generate personalized improvement recommendations based on weak dimensions."""
@@ -226,6 +374,7 @@ async def predict_aq(questionnaire: QuestionnaireInput):
         weak_dimensions = identify_weak_dimensions(core_scores)
         behavioral_pattern = get_behavioral_pattern(final_aq_category, core_scores)
         recommendations = generate_recommendations(core_scores)
+        academic_profile  = compute_academic_profile(core_scores, final_aq_category)
         
         response = PredictionResponse(
             aq_category=final_aq_category,
@@ -238,7 +387,8 @@ async def predict_aq(questionnaire: QuestionnaireInput):
             local_shap=local_shap,
             weak_dimensions=weak_dimensions,
             behavioral_pattern=behavioral_pattern,
-            recommendations=recommendations
+            recommendations=recommendations,
+            academic_profile=academic_profile,
         )
 
         # ── Persist prediction to data/predictions_log.csv ────────────────────

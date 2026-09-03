@@ -1,46 +1,46 @@
 [
     {
-        "feature": "Q7",
-        "importance": 0.2315758322,
+        "feature": "Q5",
+        "importance": 0.2270801594,
         "rank": 1
     },
     {
         "feature": "Q2",
-        "importance": 0.1075837743,
+        "importance": 0.0921402109,
         "rank": 2
     },
     {
-        "feature": "Q8",
-        "importance": 0.0554246215,
+        "feature": "Q3",
+        "importance": 0.0840158337,
         "rank": 3
     },
     {
-        "feature": "Q9",
-        "importance": 0.0536288231,
+        "feature": "Q8",
+        "importance": 0.06821518,
         "rank": 4
     },
     {
-        "feature": "Q5",
-        "importance": 0.039140281,
+        "feature": "Q4",
+        "importance": 0.0496840302,
         "rank": 5
     },
     {
-        "feature": "Q3",
-        "importance": 0.0070546737,
+        "feature": "Q9",
+        "importance": 0.0260031103,
         "rank": 6
     },
     {
-        "feature": "Q1",
-        "importance": 0.0032993175,
+        "feature": "Q6",
+        "importance": 0.016397175,
         "rank": 7
     },
     {
-        "feature": "Q4",
-        "importance": 0.0,
+        "feature": "Q7",
+        "importance": 0.0123990754,
         "rank": 8
     },
     {
-        "feature": "Q6",
+        "feature": "Q1",
         "importance": 0.0,
         "rank": 9
     },
