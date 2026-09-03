@@ -4,3 +4,9 @@ aq/
 __pycache__
 # ml_models/
 node_modules/
+analyze_selenium_results.ps1
+process_aq_academic_scores.ps1
+selenium_aq_automation.py
+test_aq_api_batch.ps1
+backend/data/AQ_and_Academic_Scores_Calculated.csv
+selenium_aq_results.csv

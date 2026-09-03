@@ -155,7 +155,11 @@ function ResultsDashboard({ results = {}, onReset }) {
 
       {/* Academic Performance Profile */}
       {academic_profile && (
-        <AcademicPerformanceProfile academic_profile={academic_profile} />
+        <AcademicPerformanceProfile
+          academic_profile={academic_profile}
+          dimensions={core_scores}
+          aqCategory={aq_category}
+        />
       )}
 
       {/* Weak Dimensions Summary Section */}
