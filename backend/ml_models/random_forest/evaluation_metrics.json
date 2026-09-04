@@ -1,10 +1,10 @@
 [
     {
         "model_name": "Random Forest",
-        "accuracy": 1.0,
-        "f1_score": 1.0,
+        "accuracy": 0.92,
+        "f1_score": 0.8819,
         "auc_roc": 1.0,
-        "cv_mean": 0.9183,
-        "cv_std": 0.0248
+        "cv_mean": 0.8933,
+        "cv_std": 0.0334
     }
 ]
