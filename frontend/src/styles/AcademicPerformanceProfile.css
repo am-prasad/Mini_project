@@ -300,3 +300,351 @@
 .dark-mode .ap-index-value           { color: #f1f5f9; }
 .dark-mode .ap-td-implication        { color: #cbd5e1; }
 .dark-mode .ap-table td              { color: #cbd5e1; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   AcademicPerformanceProfile Component Styles (.app-*)
+═══════════════════════════════════════════════════════════════════ */
+
+.app-root {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 20px;
+  padding: 32px 28px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  animation: fadeInUp 0.5s ease both;
+  margin-top: 10px;
+}
+
+/* ── Header ── */
+.app-header {
+  margin-bottom: 2px;
+}
+.app-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-primary, #1e293b);
+  margin: 0 0 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.app-subtitle {
+  font-size: 0.92rem;
+  color: var(--text-secondary, #64748b);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Resilience Ring & Hero Row ── */
+.app-resilience-row {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(99, 102, 241, 0.03));
+  border: 1px solid rgba(59, 130, 246, 0.18);
+  border-radius: 16px;
+  padding: 24px 28px;
+  flex-wrap: wrap;
+}
+
+.app-ring-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.app-ring-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.app-resilience-text {
+  flex: 1;
+  min-width: 240px;
+}
+.app-resilience-heading {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+  margin: 0 0 8px 0;
+}
+.app-resilience-para {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #475569);
+  line-height: 1.6;
+  margin: 0 0 14px 0;
+}
+.app-formula {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.app-formula span {
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--bg-secondary, #f1f5f9);
+  color: var(--text-secondary, #475569);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border, #e2e8f0);
+}
+
+/* ── Metrics Grid & Cards ── */
+.app-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.app-metric-card {
+  background: var(--bg-primary, #ffffff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.app-metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.app-metric-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.app-metric-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  padding: 6px;
+  background: var(--bg-secondary, #f8fafc);
+  border-radius: 10px;
+  line-height: 1;
+}
+.app-metric-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.app-metric-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+}
+.app-metric-desc {
+  font-size: 0.78rem;
+  color: var(--text-secondary, #64748b);
+  line-height: 1.45;
+}
+.app-metric-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
+.app-bar-track {
+  height: 8px;
+  background: var(--border, #e2e8f0);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.app-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.app-bar-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+.app-bar-val {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+}
+
+/* ── Insights Section ── */
+.app-insights-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.app-insights-heading {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+  margin: 0;
+}
+.app-insights-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 14px;
+}
+.app-insight-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--bg-secondary, #f8fafc);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 12px;
+}
+.app-insight-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.app-insight-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+  margin: 0 0 4px 0;
+}
+.app-insight-body {
+  font-size: 0.82rem;
+  color: var(--text-secondary, #475569);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── Dimension Map Table ── */
+.app-table-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.app-table-heading {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+  margin: 0;
+}
+.app-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 14px;
+}
+.app-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  text-align: left;
+}
+.app-table thead {
+  background: var(--bg-secondary, #f8fafc);
+}
+.app-table th {
+  padding: 12px 18px;
+  font-weight: 700;
+  color: var(--text-secondary, #64748b);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid var(--border, #e2e8f0);
+}
+.app-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border, #f1f5f9);
+  color: var(--text-primary, #334155);
+  line-height: 1.45;
+}
+.app-table tr:last-child td {
+  border-bottom: none;
+}
+.app-table tr:hover td {
+  background: var(--bg-secondary, #f8fafc);
+}
+.app-td-dim {
+  font-weight: 700;
+  white-space: nowrap;
+}
+.app-td-score {
+  font-weight: 700;
+  color: #059669;
+  white-space: nowrap;
+}
+.app-td-risk {
+  color: #dc2626;
+  font-size: 0.82rem;
+}
+.app-footer-note {
+  font-size: 0.78rem;
+  color: var(--text-secondary, #94a3b8);
+  font-style: italic;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Dark mode for .app-* ── */
+.dark-mode .app-root {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+.dark-mode .app-metric-card,
+.dark-mode .app-insight-card,
+.dark-mode .app-table-wrapper {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+.dark-mode .app-metric-icon {
+  background: rgba(255, 255, 255, 0.06);
+}
+.dark-mode .app-resilience-row {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(99, 102, 241, 0.04));
+  border-color: rgba(59, 130, 246, 0.25);
+}
+.dark-mode .app-title,
+.dark-mode .app-resilience-heading,
+.dark-mode .app-metric-label,
+.dark-mode .app-bar-val,
+.dark-mode .app-insights-heading,
+.dark-mode .app-insight-title,
+.dark-mode .app-table-heading {
+  color: #f1f5f9;
+}
+.dark-mode .app-subtitle,
+.dark-mode .app-resilience-para,
+.dark-mode .app-metric-desc,
+.dark-mode .app-insight-body,
+.dark-mode .app-table th,
+.dark-mode .app-table td {
+  color: #cbd5e1;
+}
+.dark-mode .app-table thead,
+.dark-mode .app-table tr:hover td {
+  background: rgba(255, 255, 255, 0.03);
+}
+.dark-mode .app-table th {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+.dark-mode .app-table td {
+  border-bottom-color: rgba(255, 255, 255, 0.04);
+}
+.dark-mode .app-bar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+.dark-mode .app-formula span {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+}
+.dark-mode .app-ring-wrapper text {
+  fill: #f1f5f9;
+}
+

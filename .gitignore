@@ -10,3 +10,4 @@ selenium_aq_automation.py
 test_aq_api_batch.ps1
 backend/data/AQ_and_Academic_Scores_Calculated.csv
 selenium_aq_results.csv
+count_distribution.ps1

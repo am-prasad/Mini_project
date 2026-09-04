@@ -1,10 +1,10 @@
 [
     {
         "model_name": "XGBoost",
-        "accuracy": 0.9615,
-        "f1_score": 0.9649,
+        "accuracy": 0.96,
+        "f1_score": 0.9635,
         "auc_roc": 1.0,
-        "cv_mean": 0.9154,
-        "cv_std": 0.0288
+        "cv_mean": 0.9017,
+        "cv_std": 0.0422
     }
 ]

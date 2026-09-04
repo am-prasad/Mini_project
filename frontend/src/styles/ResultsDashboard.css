@@ -439,6 +439,11 @@
   color: var(--color-success);
 }
 
+.priority-badge.growth {
+  background: rgba(59, 130, 246, 0.12);
+  color: #3b82f6;
+}
+
 .recommendation-suggestion {
   font-size: 0.95rem;
   font-weight: 500;

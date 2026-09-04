@@ -4,29 +4,29 @@ import { getFeatureImportance } from '../api/service';
 import '../styles/FeatureImportance.css';
 
 const QUESTION_LABELS = {
-  Q1: 'Influence on academic outcomes (Control)',
-  Q2: 'Recovery from disappointment (Ownership)',
-  Q3: 'Motivation without visible results (Reach)',
-  Q4: "Failures don't define ability (Endurance)",
+  Q1: 'Finding ways to overcome (Endurance)',
+  Q2: 'Taking responsibility (Ownership)',
+  Q3: 'Confidence across subjects (Reach)',
+  Q4: 'Problems are temporary (Endurance)',
   Q5: 'Control under pressure (Control)',
   Q6: 'Learning from mistakes (Ownership)',
-  Q7: 'Problems are temporary (Reach)',
-  Q8: 'Confidence across subjects (Endurance)',
-  Q9: 'Taking responsibility (Control)',
-  Q10: 'Finding ways to overcome (Endurance)',
+  Q7: "Failures don't define ability (Reach)",
+  Q8: 'Motivation without visible reward (Control)',
+  Q9: 'Influence on academic outcomes (Control)',
+  Q10: 'Recovery from disappointment (Ownership)',
 };
 
 const INSIGHTS = {
-  Q1: 'Believing in your ability to influence outcomes is the foundation of personal control.',
-  Q2: 'Quick recovery from setbacks signals strong emotional resilience.',
-  Q3: 'Sustained motivation without immediate feedback shows deep intrinsic drive.',
-  Q4: 'Separating identity from failure enables a growth mindset.',
-  Q5: 'Reflective learning from mistakes strongly influences AQ prediction.',
-  Q6: 'Maintaining control under pressure demonstrates mature coping strategies.',
-  Q7: 'Viewing problems as temporary prevents learned helplessness.',
-  Q8: 'Compartmentalizing setbacks prevents negative spiraling across domains.',
-  Q9: 'Taking ownership of improvement drives adaptive behavior.',
-  Q10: 'Self-efficacy in overcoming challenges is a core resilience indicator.',
+  Q1: 'Self-efficacy in overcoming challenges is a core endurance indicator.',
+  Q2: 'Taking ownership of improving your situation drives adaptive learning behavior.',
+  Q3: 'Preventing subject setbacks from spilling over demonstrates strong reach containment.',
+  Q4: 'Viewing academic obstacles as temporary and solvable prevents learned helplessness.',
+  Q5: 'Maintaining personal control under pressure demonstrates mature coping strategies.',
+  Q6: 'Reflective learning from mistakes strongly influences adaptive behavior.',
+  Q7: 'Separating academic failures from personal identity protects broad self-concept.',
+  Q8: 'Sustained motivation without immediate results reflects strong internal locus of control.',
+  Q9: 'Believing your actions influence outcomes is the foundation of personal control.',
+  Q10: 'Quick emotional recovery from setbacks signals strong resilience and accountability.',
 };
 
 

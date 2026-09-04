@@ -58,28 +58,47 @@ class PredictionResponse(BaseModel):
 router = APIRouter(prefix="", tags=["Prediction"])
 
 def calculate_core_scores(responses: Dict) -> Dict:
-    """Calculate CORE dimension scores"""
+    """Calculate CORE dimension scores based on form question mapping"""
     return {
-        'Control': (responses['Q1'] + responses['Q5'] + responses['Q9']) / 3,
-        'Ownership': (responses['Q2'] + responses['Q6']) / 2,
+        'Control': (responses['Q5'] + responses['Q8'] + responses['Q9']) / 3,
+        'Ownership': (responses['Q2'] + responses['Q6'] + responses['Q10']) / 3,
         'Reach': (responses['Q3'] + responses['Q7']) / 2,
-        'Endurance': (responses['Q4'] + responses['Q8'] + responses['Q10']) / 3,
+        'Endurance': (responses['Q1'] + responses['Q4']) / 2,
     }
 
-def identify_weak_dimensions(core_scores: Dict, threshold=3.0) -> List[Dict]:
-    """Identify weak CORE dimensions below threshold"""
-    weak_dims = []
-    for dimension, score in core_scores.items():
-        if score < threshold:
-            severity = 'Critical' if score < 2.0 else 'High' if score < 2.5 else 'Moderate'
-            weak_dims.append({
-                'dimension': dimension,
-                'score': float(score),
-                'severity': severity,
-                'target_score': 3.5,
-                'improvement_needed': float(3.5 - score)
-            })
-    return sorted(weak_dims, key=lambda x: x['improvement_needed'], reverse=True)
+def identify_weak_dimensions(core_scores: Dict) -> List[Dict]:
+    """Classify all four CORE dimensions by their score severity level."""
+    severity_rank = {'Critical': 0, 'High': 1, 'Moderate': 2, 'Growth': 3}
+    dim_list = []
+    for dimension in ['Control', 'Ownership', 'Reach', 'Endurance']:
+        score = float(core_scores.get(dimension, 3.0))
+        if score < 2.0:
+            severity = 'Critical'
+            target = 3.5
+        elif score < 2.75:
+            severity = 'High'
+            target = 3.5
+        elif score < 3.5:
+            severity = 'Moderate'
+            target = 4.0
+        else:
+            severity = 'Growth'
+            target = 5.0
+
+        dim_list.append({
+            'dimension': dimension,
+            'score': round(score, 2),
+            'severity': severity,
+            'target_score': target,
+            'improvement_needed': round(max(0.0, target - score), 2),
+            '_rank': severity_rank[severity]
+        })
+
+    # Sort with most critical priorities first, then by score ascending
+    sorted_dims = sorted(dim_list, key=lambda x: (x['_rank'], x['score']))
+    for d in sorted_dims:
+        d.pop('_rank', None)
+    return sorted_dims
 
 def get_behavioral_pattern(ml_category: str, core_scores: Dict) -> str:
     """Dynamically generated based strictly on the ML predicted category."""
@@ -250,17 +269,39 @@ def generate_recommendations(core_scores: Dict) -> List[Dict]:
         }
     }
     
+    growth_templates = {
+        'Control': {
+            'Suggestion': 'Sustain personal agency and advance proactive problem-solving',
+            'Actions': ['Mentor peers struggling with challenging coursework', 'Set advanced stretch goals beyond standard syllabus requirements', 'Maintain structured reflection routines during peak exam seasons']
+        },
+        'Ownership': {
+            'Suggestion': 'Maintain high accountability and continuous learning',
+            'Actions': ['Lead collaborative study groups to reinforce mastery', 'Systematically document revision habits that deliver top results', 'Continue viewing unexpected grading setbacks as refined feedback']
+        },
+        'Reach': {
+            'Suggestion': 'Reinforce strong compartmentalization and holistic balance',
+            'Actions': ['Cultivate diverse extracurricular interests to maintain balance', 'Support classmates in keeping isolated subject setbacks in perspective', 'Maintain broad perspective during competitive examination cycles']
+        },
+        'Endurance': {
+            'Suggestion': 'Preserve stamina and long-horizon persistence',
+            'Actions': ['Pace yourself strategically during intensive multi-semester projects', 'Schedule intentional recovery periods to prevent cognitive fatigue', 'Keep celebrating milestones on long-term career aspirations']
+        }
+    }
+    
     for dim in weak_dims:
         dimension = dim['dimension']
         severity = dim['severity']
         
-        if dimension in templates:
-            template = templates[dimension]
+        tmpl = growth_templates.get(dimension) if severity == 'Growth' else templates.get(dimension)
+        if not tmpl and dimension in templates:
+            tmpl = templates[dimension]
+            
+        if tmpl:
             recommendations.append({
                 'Dimension': dimension,
                 'Priority': severity,
-                'Suggestion': template['Suggestion'],
-                'Actions': template['Actions']
+                'Suggestion': tmpl['Suggestion'],
+                'Actions': tmpl['Actions']
             })
     
     return recommendations

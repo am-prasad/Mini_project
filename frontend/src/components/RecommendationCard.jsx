@@ -11,10 +11,12 @@ const PRIORITY_STYLES = {
   Moderate: 'medium',
   Medium: 'medium',
   Low: 'low',
+  Growth: 'growth',
   high: 'high',
   moderate: 'medium',
   medium: 'medium',
   low: 'low',
+  growth: 'growth',
 };
 
 function RecommendationCard({ recommendation }) {

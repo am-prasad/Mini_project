@@ -22,16 +22,16 @@ class FeatureImportanceResponse(BaseModel):
 
 
 QUESTION_DESCRIPTIONS = {
-    'Q1': 'Influence on academic outcomes (Control)',
-    'Q2': 'Recovery from disappointment (Ownership)',
-    'Q3': 'Motivation without visible reward (Reach)',
-    'Q4': "Failures don't define ability (Endurance)",
+    'Q1': 'Finding ways to overcome (Endurance)',
+    'Q2': 'Taking responsibility (Ownership)',
+    'Q3': 'Confidence across subjects (Reach)',
+    'Q4': 'Problems are temporary (Endurance)',
     'Q5': 'Control under pressure (Control)',
     'Q6': 'Learning from mistakes (Ownership)',
-    'Q7': 'Problems are temporary (Reach)',
-    'Q8': 'Confidence across subjects (Endurance)',
-    'Q9': 'Taking responsibility (Control)',
-    'Q10': 'Finding ways to overcome (Endurance)'
+    'Q7': "Failures don't define ability (Reach)",
+    'Q8': 'Motivation without visible reward (Control)',
+    'Q9': 'Influence on academic outcomes (Control)',
+    'Q10': 'Recovery from disappointment (Ownership)',
 }
 
 

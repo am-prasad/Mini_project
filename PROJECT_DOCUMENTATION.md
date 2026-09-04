@@ -172,18 +172,18 @@ Mini_Project/
 
 ### Question Descriptions
 
-| Feature | Description | CORE Dimension |
-|---|---|---|
-| **Q1** | Influence on academic outcomes | Control |
-| **Q2** | Recovery from disappointment | Ownership |
-| **Q3** | Motivation without visible results | Reach |
-| **Q4** | Failures don't define ability | Endurance |
-| **Q5** | Learning from mistakes | Control |
-| **Q6** | Control under pressure | Ownership |
-| **Q7** | Problems are temporary | Reach |
-| **Q8** | Confidence across subjects | Endurance |
-| **Q9** | Taking responsibility | Control |
-| **Q10** | Finding ways to overcome | Endurance |
+| Feature | Description | Form Question Text | CORE Dimension |
+|---|---|---|---|
+| **Q1** | Finding ways to overcome | When I face academic difficulties, I believe I can find a way to overcome them. | Endurance |
+| **Q2** | Taking responsibility | I take responsibility for improving my situation when things go wrong in my studies. | Ownership |
+| **Q3** | Confidence across subjects | A setback in one subject does not affect my confidence in other subjects. | Reach |
+| **Q4** | Problems are temporary | I believe most academic problems are temporary and can be resolved with effort. | Endurance |
+| **Q5** | Control under pressure | Even under pressure, I feel I have control over how I respond to academic challenges. | Control |
+| **Q6** | Learning from mistakes | I reflect on my mistakes and use them to perform better next time. | Ownership |
+| **Q7** | Failures don't define ability | Academic failures do not define my overall ability as a student. | Reach |
+| **Q8** | Motivation without visible reward | I remain motivated even when results are not immediately visible. | Control |
+| **Q9** | Influence on academic outcomes | I believe my actions can positively influence my academic outcomes. | Control |
+| **Q10** | Recovery from disappointment | I recover quickly after experiencing disappointment in my studies. | Ownership |
 
 ---
 
@@ -192,19 +192,19 @@ Mini_Project/
 The AQ framework decomposes resilience into four CORE dimensions. Each is averaged from its constituent questions:
 
 ```
-Control   = (Q1 + Q5 + Q9) / 3
-Ownership = (Q2 + Q6) / 2
+Control   = (Q5 + Q8 + Q9) / 3
+Ownership = (Q2 + Q6 + Q10) / 3
 Reach     = (Q3 + Q7) / 2
-Endurance = (Q4 + Q8 + Q10) / 3
+Endurance = (Q1 + Q4) / 2
 AQ Score  = (Control + Ownership + Reach + Endurance) / 4
 ```
 
 | Dimension | Questions | What it Measures |
 |---|---|---|
-| **Control** | Q1, Q5, Q9 | Belief in personal agency; can influence outcomes |
-| **Ownership** | Q2, Q6 | Taking responsibility; learning from mistakes |
-| **Reach** | Q3, Q7 | Preventing setbacks from spilling into other life areas |
-| **Endurance** | Q4, Q8, Q10 | Believing problems are temporary; persistence |
+| **Control** | Q5, Q8, Q9 | Belief in personal agency, control under pressure, motivation |
+| **Ownership** | Q2, Q6, Q10 | Taking responsibility, learning from mistakes, emotional recovery |
+| **Reach** | Q3, Q7 | Keeping setbacks contained, failures not defining overall ability |
+| **Endurance** | Q1, Q4 | Believing problems are temporary, finding ways to overcome hurdles |
 
 ---
 

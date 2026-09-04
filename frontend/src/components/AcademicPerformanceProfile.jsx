@@ -165,11 +165,20 @@ function proactivityText(v) {
  *               Each value is a 1–5 Likert average for that dimension.
  *   aqCategory: 'Low' | 'Medium' | 'High'
  */
-function AcademicPerformanceProfile({ dimensions, aqCategory }) {
-  const {
-    persistence, burnout, gradeRecovery,
-    selfDirected, proactivity, resilience,
-  } = deriveMetrics(dimensions);
+function AcademicPerformanceProfile({ academic_profile, dimensions, aqCategory }) {
+  const indMap = (academic_profile?.indicators || []).reduce((acc, curr) => {
+    acc[curr.name] = curr.score;
+    return acc;
+  }, {});
+
+  const derived = deriveMetrics(dimensions);
+
+  const persistence   = indMap['Academic Persistence']        ?? derived.persistence;
+  const burnout       = indMap['Burnout Resistance']          ?? derived.burnout;
+  const gradeRecovery = indMap['Grade Recovery Speed']        ?? derived.gradeRecovery;
+  const selfDirected  = indMap['Academic Self-Efficacy']      ?? derived.selfDirected;
+  const proactivity   = indMap['Learning Agility']            ?? derived.proactivity;
+  const resilience    = academic_profile?.overall_index       ?? derived.resilience;
 
   return (
     <div className="app-root">

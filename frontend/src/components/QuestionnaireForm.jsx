@@ -2,16 +2,16 @@ import { useState } from 'react';
 import '../styles/QuestionnaireForm.css';
 
 const QUESTIONS = [
-  { id: 'Q1', text: 'I believe my actions can positively influence my academic outcomes.', dimension: 'Control' },
-  { id: 'Q2', text: 'I recover quickly after experiencing disappointment in my studies.', dimension: 'Ownership' },
-  { id: 'Q3', text: 'I remain motivated even when results are not immediately visible.', dimension: 'Reach' },
-  { id: 'Q4', text: 'Academic failures do not define my overall ability as a student.', dimension: 'Endurance' },
+  { id: 'Q1', text: 'When I face academic difficulties, I believe I can find a way to overcome them.', dimension: 'Endurance' },
+  { id: 'Q2', text: 'I take responsibility for improving my situation when things go wrong in my studies.', dimension: 'Ownership' },
+  { id: 'Q3', text: 'A setback in one subject does not affect my confidence in other subjects.', dimension: 'Reach' },
+  { id: 'Q4', text: 'I believe most academic problems are temporary and can be resolved with effort.', dimension: 'Endurance' },
   { id: 'Q5', text: 'Even under pressure, I feel I have control over how I respond to academic challenges.', dimension: 'Control' },
   { id: 'Q6', text: 'I reflect on my mistakes and use them to perform better next time.', dimension: 'Ownership' },
-  { id: 'Q7', text: 'I believe most academic problems are temporary and can be resolved with effort.', dimension: 'Reach' },
-  { id: 'Q8', text: 'A setback in one subject does not affect my confidence in other subjects.', dimension: 'Endurance' },
-  { id: 'Q9', text: 'I take responsibility for improving my situation when things go wrong in my studies.', dimension: 'Control' },
-  { id: 'Q10', text: 'When I face academic difficulties, I believe I can find a way to overcome them.', dimension: 'Endurance' },
+  { id: 'Q7', text: 'Academic failures do not define my overall ability as a student.', dimension: 'Reach' },
+  { id: 'Q8', text: 'I remain motivated even when results are not immediately visible.', dimension: 'Control' },
+  { id: 'Q9', text: 'I believe my actions can positively influence my academic outcomes.', dimension: 'Control' },
+  { id: 'Q10', text: 'I recover quickly after experiencing disappointment in my studies.', dimension: 'Ownership' },
 ];
 
 

@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 _BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LOG_CSV   = os.path.join(_BASE_DIR, "data", "AQ of adoloscents - Sheet.csv")
+LOG_CSV   = os.path.join(_BASE_DIR, "data", "predictions_log.csv")
 
 _COLUMNS = [
     "Q1", "Q2", "Q3", "Q4", "Q5",
@@ -20,11 +20,10 @@ _CATEGORY_MAP = {"Low": 0, "Medium": 1, "High": 2}
 
 
 def _calculate_core(q: dict) -> dict:
-    
-    control   = (q["Q1"] + q["Q5"] + q["Q9"]) / 3
-    ownership = (q["Q2"] + q["Q6"]) / 2
+    control   = (q["Q5"] + q["Q8"] + q["Q9"]) / 3
+    ownership = (q["Q2"] + q["Q6"] + q["Q10"]) / 3
     reach     = (q["Q3"] + q["Q7"]) / 2
-    endurance = (q["Q4"] + q["Q8"] + q["Q10"]) / 3
+    endurance = (q["Q1"] + q["Q4"]) / 2
     aq        = (control + ownership + reach + endurance) / 4
     return {
         "CONTROL":   round(control,   10),

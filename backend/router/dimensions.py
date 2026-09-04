@@ -9,14 +9,14 @@ router = APIRouter(prefix="", tags=["Dimensions"])
 
 CORE_DIMENSIONS_DATA = {
     'Control': {
-        'questions': ['Q1', 'Q5', 'Q9'],
+        'questions': ['Q5', 'Q8', 'Q9'],
         'description': 'Belief in personal agency and problem-solving ability',
         'full_description': 'Control measures whether you believe your actions can influence outcomes and that you can solve problems when they arise. It reflects personal agency.',
         'low_indicators': ['Feeling helpless when faced with challenges', 'Believing others control outcomes'],
         'improvement_tips': ['Set small achievable goals', 'Practice problem-solving daily']
     },
     'Ownership': {
-        'questions': ['Q2', 'Q6'],
+        'questions': ['Q2', 'Q6', 'Q10'],
         'description': 'Taking responsibility and learning from mistakes',
         'full_description': 'Ownership is about taking responsibility for your actions and their consequences. It means not blaming others excessively and being willing to learn from mistakes.',
         'low_indicators': ['Blaming external factors exclusively', 'Resistance to self-reflection'],
@@ -30,7 +30,7 @@ CORE_DIMENSIONS_DATA = {
         'improvement_tips': ['Practice compartmentalization', 'Celebrate successes in other areas']
     },
     'Endurance': {
-        'questions': ['Q4', 'Q8', 'Q10'],
+        'questions': ['Q1', 'Q4'],
         'description': 'Belief that problems are temporary and solvable',
         'full_description': 'Endurance is about believing that difficulties are temporary and that effort will eventually lead to improvement. It\'s the motivation to persist.',
         'low_indicators': ['Viewing problems as permanent', 'Losing motivation with slow progress'],
